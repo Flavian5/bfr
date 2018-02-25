@@ -1,1 +1,1 @@
-from .bfr import hello_world
+from .bfr import init_cluster
