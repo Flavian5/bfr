@@ -7,9 +7,15 @@ Cluster = namedtuple('Cluster', 'mean std_dev')
 
 def init_cluster(dimensions):
     """
-    :param dimensions: Number of dimensions of the standard deviation and mean vectors
 
-    :return: Cluster with mean and standard deviation represented by zero vectors
+    Parameters
+    ----------
+    dimensions: Dimensionality of the cluster
+
+    Returns
+    -------
+    namedtuple with the attributes mean and std_dev
+
     """
     mean = numpy.zeros(dimensions)
     std_dev = numpy.zeros(dimensions)

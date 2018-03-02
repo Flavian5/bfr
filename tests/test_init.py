@@ -8,7 +8,10 @@ class BasicTests(unittest.TestCase):
 
     def test_init_cluster(self):
         """
-        Tests that initialized clusters has correct dimensionality and number of attributes
+
+        Passed if a cluster is initialised with the correct attributes and dimensionality
+        -------
+
         """
         dimensions = 10
         cluster = bfr.init_cluster(dimensions)
