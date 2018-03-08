@@ -3,3 +3,5 @@ from .bfr import Cluster
 from .bfr import malahanobis
 from .bfr import mean
 from .bfr import std_dev
+from .bfr import euclidean
+from .bfr import closest

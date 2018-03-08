@@ -10,6 +10,24 @@ class Cluster:
         self.sums_sq = numpy.zeros(dimensions)
 
 
+def closest(point, clusters):
+    """ Finds the cluster of which the centroid is closest to the point
+
+    Parameters
+    ----------
+    point : numpy.ndarray
+    clusters : numpy.ndarray of Clusters
+
+    Returns
+    -------
+    cluster : The cluster with the closest mean (center)
+    """
+    eucl = numpy.vectorize(lambda cluster: euclidean(point, cluster))
+    distances = eucl(clusters)
+    min_idx = numpy.argmin(distances)
+    return clusters[min_idx]
+
+
 def std_dev(cluster):
     """ Computes the standard deviation within each dimension of a cluster.
     V(x) = E(x²) - (E(x))²
@@ -17,7 +35,7 @@ def std_dev(cluster):
 
     Parameters
     ----------
-    cluster: namedtuple with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
@@ -36,13 +54,31 @@ def mean(cluster):
 
     Parameters
     ----------
-    cluster: namedtuple with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
     mean (centroid):
     """
     return cluster.sums / cluster.size
+
+
+def euclidean(point, cluster):
+    """ Computes the euclidean distance between a point and the mean of a cluster
+    d(v, w) = ||v - w|| = sqrt(sum(v_i - w_i)²)
+    Parameters
+    ----------
+    point : numpy.ndarray
+    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+
+    Returns
+    -------
+    Euclidean distance : float
+
+    """
+    diff = point - mean(cluster)
+    sum_squared = numpy.dot(diff, diff)
+    return numpy.sqrt(sum_squared)
 
 
 def malahanobis(point, cluster):
@@ -53,7 +89,7 @@ def malahanobis(point, cluster):
     Parameters
     ----------
     point : numpy.ndarray
-    cluster : namedtuple with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------

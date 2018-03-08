@@ -1,5 +1,6 @@
 """Testing mathematical functions used in bfr"""
 import unittest
+import random
 import numpy
 from .context import bfr
 
@@ -7,14 +8,28 @@ from .context import bfr
 class MathTests(unittest.TestCase):
     """Mathematical test cases"""
     dimensions = 3
+    no_clusters = 3
     point = numpy.ones(dimensions)
-    cluster = bfr.Cluster(dimensions)
-    for i in range(dimensions):
-        number = i + 1
-        print(number)
-        cluster.sums[i] = number
-        cluster.sums_sq[i] = numpy.square(number)
-    cluster.size = 2
+    clusters = numpy.empty(no_clusters, dtype=bfr.Cluster)
+    for i in range(no_clusters):
+        clusters[i] = bfr.Cluster(dimensions)
+        for j in range(dimensions):
+            number = random.randint(-1337, 1337)
+            clusters[i].sums[j] = number
+            clusters[i].sums_sq[j] = numpy.square(number)
+            clusters[i].size = 2
+    cluster = clusters[0]
+
+    def test_closest(self):
+        """ Tests that no other cluster is closer than the suggested closest
+        -------
+
+        """
+        closest_cluster = bfr.closest(self.point, self.clusters)
+        for cluster in self.clusters:
+            min_dist = bfr.euclidean(self.point, closest_cluster)
+            distance = bfr.euclidean(self.point, cluster)
+            self.assertLessEqual(min_dist, distance, "Incorrect closest cluster")
 
     def test_std_dev(self):
         """ TODO update test case
@@ -33,6 +48,18 @@ class MathTests(unittest.TestCase):
         diff = mean - bfr.mean(self.cluster)
         for dimension in diff:
             self.assertEqual(dimension, 0, "Mean vector incorrect")
+
+    def test_euclidean(self):
+        """ Passed if the euclidean distance is computed correctly
+
+        -------
+
+        """
+        euclidean = bfr.euclidean(self.point, self.cluster)
+        diff = self.point - bfr.mean(self.cluster)
+        other_euclidean = numpy.linalg.norm(diff)
+        self.assertEqual(euclidean, other_euclidean, "Incorrect euclidean distance")
+
 
     def test_malahanobis(self):
         """ Passed if the mahalanobis distance computes to the same value
@@ -53,7 +80,6 @@ class MathTests(unittest.TestCase):
         result = numpy.sqrt(total)
         # Second computation
         mahalanobis = bfr.malahanobis(self.point, self.cluster)
-        print(mahalanobis)
         self.assertEqual(result, mahalanobis, "Differing mahalanobis distances")
 
 
