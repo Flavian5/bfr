@@ -1,25 +1,48 @@
 """This is a module defining bfr"""
-from collections import namedtuple
 import numpy
 
-Cluster = namedtuple('Cluster', 'mean std_dev')
+
+class Cluster:
+    """A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes"""
+    def __init__(self, dimensions):
+        self.size = 0
+        self.sums = numpy.zeros(dimensions)
+        self.sums_sq = numpy.zeros(dimensions)
 
 
-def init_cluster(dimensions):
-    """Initializes a clusterr
+def std_dev(cluster):
+    """ Computes the standard deviation within each dimension of a cluster.
+    V(x) = E(x²) - (E(x))²
+    sd(x) = sqrt(V(x))
 
     Parameters
     ----------
-    dimensions : Dimensionality of the cluster
+    cluster: namedtuple with the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
-    Cluster : namedtuple with the numpy arrays mean and std_dev as attributes
+    standard deviation vector: numpy.ndarray with the standard deviation of each dimension
 
     """
-    mean = numpy.zeros(dimensions)
-    std_dev = numpy.zeros(dimensions)
-    return Cluster(mean, std_dev)
+
+    expected_x2 = cluster.sums_sq / cluster.size
+    expected_x = cluster.sums / cluster.size
+    variance = expected_x2 - (expected_x ** 2)
+    return numpy.sqrt(variance)
+
+
+def mean(cluster):
+    """
+
+    Parameters
+    ----------
+    cluster: namedtuple with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+
+    Returns
+    -------
+    mean (centroid):
+    """
+    return cluster.sums / cluster.size
 
 
 def malahanobis(point, cluster):
@@ -29,16 +52,17 @@ def malahanobis(point, cluster):
 
     Parameters
     ----------
-    point : numpy array with dimensionality N
-    cluster : Named tuple with the numpy arrays mean and std_dev as attributes
+    point : numpy.ndarray
+    cluster : namedtuple with the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
     malahanobis distance : float
 
     """
-    diff = point - cluster.mean
-    normalized = diff / cluster.std_dev
+    diff = point - mean(cluster)
+    normalized = diff / std_dev(cluster)
+    normalized = numpy.nan_to_num(normalized)
     squared = normalized ** 2
     total = numpy.sum(squared)
     return numpy.sqrt(total)
