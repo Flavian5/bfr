@@ -1,7 +1,6 @@
 """Testing mathematical functions used in bfr"""
 import unittest
 import numpy
-import random
 from .context import bfr
 
 
@@ -9,7 +8,7 @@ class MathTests(unittest.TestCase):
     """Mathematical test cases"""
     dimensions = 3
     point = numpy.ones(dimensions)
-    cluster =bfr.Cluster(dimensions)
+    cluster = bfr.Cluster(dimensions)
     for i in range(dimensions):
         number = i + 1
         print(number)
