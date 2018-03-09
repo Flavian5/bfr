@@ -25,7 +25,7 @@ class MathTests(unittest.TestCase):
         sum[0] = 1 + 2 = 3
         sums_sq[0] = 1² + 2² = 5
         mean = 1 + 2 / 2 = 1.5
-        std_dev = sqrt(5 - (3 / 2)²) = 0.5
+        std_dev = sqrt(5 / 2 - (3 / 2)²) = 0.5
         -------
 
         """

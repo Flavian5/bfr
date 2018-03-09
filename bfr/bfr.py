@@ -3,12 +3,50 @@ import numpy
 
 
 class Cluster:
-    """A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes"""
+    """ A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes"""
     def __init__(self, dimensions):
         self.size = 0
         self.sums = numpy.zeros(dimensions)
         self.sums_sq = numpy.zeros(dimensions)
 
+
+class Model:
+    """
+
+    Attributes
+    ----------
+    mahal_threshold : float
+        Nearness of point and cluster is determined by mahalanobis distance < threshold * std_dev
+
+    eucl_threshold : float
+        Nearness of two points is determined by Euclidean distance < threshold
+
+    dimensions : int
+        The dimensionality of the model
+
+    nof_clusters : int
+        The number of clusters (eg. K)
+
+    discard : list
+        The discard set holds all the clusters. A point will update a cluster
+        (and thus be discarded) if it is considered near the cluster.
+
+    compress : list
+        The compression set holds clusters of points which are near to each other
+        but not near enough to be included in a cluster of the discard set
+
+    retain : list
+        Contains uncompressed outliers which are neither near to other points nor a cluster
+
+    """
+    def __init__(self, **kwargs):
+        self.mahal_threshold = kwargs.pop('mahalanobis_threshold', 3)
+        self.eucl_threshold = kwargs.pop('euclidean_threshold', 1000)
+        self.dimensions = kwargs.pop('dimensions')
+        self.nof_clusters = kwargs.pop('nof_clusters')
+        self.discard = [Cluster(self.dimensions) for i in range(self.nof_clusters)]
+        self.compress = []
+        self.retain = []
 
 def update_cluster(point, cluster):
     """ Updates the given cluster according to the data of point
@@ -16,7 +54,10 @@ def update_cluster(point, cluster):
     Parameters
     ----------
     point : numpy.ndarray
-    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+        Vector with the same dimensionality as the bfr model
+
+    cluster : bfr.Cluster
+        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
@@ -33,7 +74,10 @@ def closest(point, clusters):
     Parameters
     ----------
     point : numpy.ndarray
-    clusters : numpy.ndarray of Clusters
+        Vector with the same dimensionality as the bfr model
+
+    clusters : list
+        A list of clusters
 
     Returns
     -------
@@ -41,9 +85,8 @@ def closest(point, clusters):
 
     """
 
-    eucl = numpy.vectorize(lambda cluster: euclidean(point, cluster))
-    distances = eucl(clusters)
-    min_idx = numpy.argmin(distances)
+    dists = map(lambda cluster: euclidean(point, cluster), clusters)
+    min_idx = numpy.argmin(list(dists))
     return clusters[min_idx]
 
 
@@ -54,11 +97,13 @@ def std_dev(cluster):
 
     Parameters
     ----------
-    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : bfr.Cluster
+        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
-    standard deviation vector: numpy.ndarray with the standard deviation of each dimension
+    standard deviation : numpy.ndarray
+        The standard deviation of each dimension
 
     """
 
@@ -69,15 +114,17 @@ def std_dev(cluster):
 
 
 def mean(cluster):
-    """
+    """ Computes the mean of the cluster within each dimension
 
     Parameters
     ----------
-    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : bfr.Cluster
+        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
-    mean (centroid):
+    mean (centroid): numpy.ndarray
+        The mean of each dimensions (the centroid)
 
     """
 
@@ -90,7 +137,10 @@ def euclidean(point, cluster):
     Parameters
     ----------
     point : numpy.ndarray
-    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+        Vector with the same dimensionality as the bfr model
+
+    cluster : bfr.Cluster
+        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
@@ -111,7 +161,10 @@ def malahanobis(point, cluster):
     Parameters
     ----------
     point : numpy.ndarray
-    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+        Vector with the same dimensionality as the bfr model
+
+    cluster : bfr.Cluster
+        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
 
     Returns
     -------
@@ -121,7 +174,7 @@ def malahanobis(point, cluster):
 
     diff = point - mean(cluster)
     normalized = diff / std_dev(cluster)
-    normalized = numpy.nan_to_num(normalized)
+    #normalized = numpy.nan_to_num(normalized)
     squared = normalized ** 2
     total = numpy.sum(squared)
     return numpy.sqrt(total)

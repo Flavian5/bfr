@@ -1,4 +1,5 @@
 "This is the package bfr"
+from .bfr import Model
 from .bfr import Cluster
 from .bfr import malahanobis
 from .bfr import mean
