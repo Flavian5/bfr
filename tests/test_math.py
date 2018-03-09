@@ -20,8 +20,25 @@ class MathTests(unittest.TestCase):
             clusters[i].size = 2
     cluster = clusters[0]
 
+    def test_update_cluster(self):
+        """ Tests that a cluster updates its metadata correctly
+        sum[0] = 1 + 2 = 3
+        sums_sq[0] = 1² + 2² = 5
+        mean = 1 + 2 / 2 = 1.5
+        std_dev = sqrt(5 - (3 / 2)²) = 0.5
+        -------
+
+        """
+        cluster = bfr.Cluster(self.dimensions)
+        point = self.point
+        bfr.update_cluster(point, cluster)
+        bfr.update_cluster(point * 2, cluster)
+        self.assertEqual(cluster.sums[0], 3, "Incorrect sum")
+        self.assertEqual(cluster.sums_sq[0], 5, "Incorrect sums_sq")
+        self.assertEqual(bfr.mean(cluster)[0], 1.5, "Incorrect mean")
+        self.assertEqual(bfr.std_dev(cluster)[0], 0.5, "Incorrect std_dev")
     def test_closest(self):
-        """ Tests that no other cluster is closer than the suggested closest
+        """ Tests that no other centroid is closer than the suggested closest
         -------
 
         """

@@ -5,3 +5,4 @@ from .bfr import mean
 from .bfr import std_dev
 from .bfr import euclidean
 from .bfr import closest
+from .bfr import update_cluster

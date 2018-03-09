@@ -10,6 +10,23 @@ class Cluster:
         self.sums_sq = numpy.zeros(dimensions)
 
 
+def update_cluster(point, cluster):
+    """ Updates the given cluster according to the data of point
+
+    Parameters
+    ----------
+    point : numpy.ndarray
+    cluster : Cluster with the (int)size and numpy.ndarrays sums and sums_sq as attributes
+
+    Returns
+    -------
+
+    """
+    cluster.size += 1
+    cluster.sums += point
+    cluster.sums_sq += point ** 2
+
+
 def closest(point, clusters):
     """ Finds the cluster of which the centroid is closest to the point
 
@@ -21,7 +38,9 @@ def closest(point, clusters):
     Returns
     -------
     cluster : The cluster with the closest mean (center)
+
     """
+
     eucl = numpy.vectorize(lambda cluster: euclidean(point, cluster))
     distances = eucl(clusters)
     min_idx = numpy.argmin(distances)
@@ -59,7 +78,9 @@ def mean(cluster):
     Returns
     -------
     mean (centroid):
+
     """
+
     return cluster.sums / cluster.size
 
 
@@ -76,6 +97,7 @@ def euclidean(point, cluster):
     Euclidean distance : float
 
     """
+
     diff = point - mean(cluster)
     sum_squared = numpy.dot(diff, diff)
     return numpy.sqrt(sum_squared)
@@ -96,6 +118,7 @@ def malahanobis(point, cluster):
     malahanobis distance : float
 
     """
+
     diff = point - mean(cluster)
     normalized = diff / std_dev(cluster)
     normalized = numpy.nan_to_num(normalized)
