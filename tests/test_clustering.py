@@ -1,4 +1,4 @@
-"""Testing template"""
+"""This module tests clustering"""
 import unittest
 import numpy
 import matplotlib.pyplot
@@ -19,16 +19,21 @@ class TestClustering(unittest.TestCase):
     model.create(vectors)
 
     def test_plot(self):
+        """ predicts points of the generated testdata using the created bfr.model
+
+        -------
+
+        """
         predictions = numpy.zeros(1000)
         for idx, point in enumerate(self.vectors):
             predictions[idx] = self.model.predict(point)
 
-        x, y = self.vectors.T
+        x_cord, y_cord = self.vectors.T
         #print(x)
         #colors = ['black', 'green', 'blue', 'orange', 'red', 'gray']
         #color_map = matplotlib.colors.ListedColormap(colors)
         #matplotlib.pyplot.scatter(x, y, c=predictions, cmap=color_map)
-        matplotlib.pyplot.scatter(x, y, c=predictions)
+        matplotlib.pyplot.scatter(x_cord, y_cord, c=predictions)
         matplotlib.pyplot.show()
 
 

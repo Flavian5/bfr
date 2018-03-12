@@ -38,35 +38,31 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(model.retain, [], "Incorrect retain set")
 
     def test_random_points(self):
+        """ Tests that the appropriate amount of random points are returned and
+        that that the remaining points matrix is adjusted appropriately.
+
+        -------
+
+        """
         points = numpy.ones((self.nof_points, self.dimensions))
         for i in range(self.nof_points):
             points[i] *= i
-        initial_points = bfr.random_points(5, points)
-        idx = points
+        bfr.random_points(5, points)
         used = 0
         for point in points:
             if bfr.used(point):
                 used += 1
         self.assertEqual(used, self.nof_points - self.nof_clusters, "Remaining points incorrect")
 
-    """def test_initialize(self):
-        points = numpy.ones((self.nof_points, self.dimensions))
-        for i in range(len(points)):
-            points[i] *= i
-        self.model.initialize(points)"""
-
-    """def test_create_model(self):
-        points = numpy.ones((self.nof_points, self.dimensions))
-        model = bfr.Model(dimensions=2, nof_clusters=2)
-        model.create(points)
-        centers = model.discard
-        for center in centers:
-            print("means", bfr.mean(center))"""
-
     def test_variance(self):
+        """ Tests that the has_variance flag of a cluster updates accordingly.
+
+        -------
+
+        """
         cluster = bfr.Cluster(2)
         bfr.update_cluster(numpy.ones(2), cluster)
-        self.assertFalse(cluster.has_variance, "Cluster har variance when it should not")
+        self.assertFalse(cluster.has_variance, "Cluster has variance when it should not")
         bfr.update_cluster(numpy.ones(2) * 2, cluster)
         self.assertTrue(cluster.has_variance, "Cluster variance not updated")
 
