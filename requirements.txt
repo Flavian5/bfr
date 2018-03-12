@@ -1,4 +1,4 @@
 nose
 numpy
-scipy
+sklearn
 pylint

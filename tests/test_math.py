@@ -42,7 +42,7 @@ class MathTests(unittest.TestCase):
         -------
 
         """
-        closest_cluster = bfr.closest(self.point, self.clusters)
+        closest_cluster = bfr.closest(self.point, self.clusters, bfr.euclidean)
         for cluster in self.clusters:
             min_dist = bfr.euclidean(self.point, closest_cluster)
             distance = bfr.euclidean(self.point, cluster)
@@ -78,7 +78,7 @@ class MathTests(unittest.TestCase):
         self.assertEqual(euclidean, other_euclidean, "Incorrect euclidean distance")
 
 
-    def test_malahanobis(self):
+    def test_mahalanobis(self):
         """ Passed if the mahalanobis distance computes to the same value
         with two alternative methods
 
@@ -96,7 +96,7 @@ class MathTests(unittest.TestCase):
             total = total + squared
         result = numpy.sqrt(total)
         # Second computation
-        mahalanobis = bfr.malahanobis(self.point, self.cluster)
+        mahalanobis = bfr.mahalanobis(self.point, self.cluster)
         self.assertEqual(result, mahalanobis, "Differing mahalanobis distances")
 
 

@@ -6,7 +6,12 @@ from .context import bfr
 
 class BasicTests(unittest.TestCase):
     """Basic test cases."""
-
+    dimensions = 2
+    nof_points = 10
+    nof_clusters = 5
+    model = bfr.Model(dimensions=dimensions,
+                      nof_clusters=nof_clusters,
+                      mahalanobis_threshold=3)
     def test_init_cluster(self):
         """ Passed if a cluster is initialised with the correct attributes
 
@@ -26,15 +31,44 @@ class BasicTests(unittest.TestCase):
         -------
 
         """
-        model = bfr.Model(dimensions=3,
-                          nof_clusters=4,
-                          mahalanobis_threshold=3)
-        self.assertEqual(model.dimensions, 3, "Incorrect dimensionality")
-        self.assertEqual(model.mahal_threshold, 3, "Incorrect mahalanobis threshold")
-        self.assertEqual(model.eucl_threshold, 1000, "Incorrect euclidean threshold")
-        self.assertEqual(len(model.discard), model.nof_clusters, "Incorrect nof_clusters")
+        model = self.model
+        self.assertEqual(model.dimensions, self.dimensions, "Incorrect dimensionality")
+        self.assertEqual(model.discard, [], "Incorrect discard_set")
         self.assertEqual(model.compress, [], "Incorrect compress set")
         self.assertEqual(model.retain, [], "Incorrect retain set")
+
+    def test_random_points(self):
+        points = numpy.ones((self.nof_points, self.dimensions))
+        for i in range(self.nof_points):
+            points[i] *= i
+        initial_points = bfr.random_points(5, points)
+        idx = points
+        used = 0
+        for point in points:
+            if bfr.used(point):
+                used += 1
+        self.assertEqual(used, self.nof_points - self.nof_clusters, "Remaining points incorrect")
+
+    """def test_initialize(self):
+        points = numpy.ones((self.nof_points, self.dimensions))
+        for i in range(len(points)):
+            points[i] *= i
+        self.model.initialize(points)"""
+
+    """def test_create_model(self):
+        points = numpy.ones((self.nof_points, self.dimensions))
+        model = bfr.Model(dimensions=2, nof_clusters=2)
+        model.create(points)
+        centers = model.discard
+        for center in centers:
+            print("means", bfr.mean(center))"""
+
+    def test_variance(self):
+        cluster = bfr.Cluster(2)
+        bfr.update_cluster(numpy.ones(2), cluster)
+        self.assertFalse(cluster.has_variance, "Cluster har variance when it should not")
+        bfr.update_cluster(numpy.ones(2) * 2, cluster)
+        self.assertTrue(cluster.has_variance, "Cluster variance not updated")
 
 if __name__ == '__main__':
     unittest.main()
