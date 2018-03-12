@@ -59,7 +59,7 @@ class Model:
         self.retain = []
 
     def initialize(self, points, initial_points=None):
-        """ Initializes clusters using
+        """ Initializes clusters using points and optionally specified initial points.
 
         Parameters
         ----------
@@ -102,7 +102,9 @@ class Model:
         -------
         bool
             True if the clustering clusters all points. False otherwise
+
         """
+
         next_idx = bfr.cluster_points(points[idx:], self, bfr.finish_points)
         if next_idx:
             return True
@@ -128,7 +130,9 @@ class Model:
         -------
         bool
             True if the model was succesfully created. False otherwise.
+
         """
+
         if self.initialize(points, initial_points):
             self.threshold_fun = bfr.mahalanobis
             self.threshold = self.mahal_threshold

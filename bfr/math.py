@@ -1,6 +1,7 @@
 """This module contains mathematical functions used in bfr"""
 import numpy
 
+
 def has_variance(cluster):
     """ Checks if a cluster has zero variance/std_dev in any dimension
 
@@ -12,7 +13,9 @@ def has_variance(cluster):
     -------
     bool
         True if the cluster does not have 0 std_dev in any dimension, False otherwise
+
     """
+
     std_devs = std_dev(cluster)
     return numpy.all(std_devs)
 

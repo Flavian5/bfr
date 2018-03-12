@@ -5,7 +5,7 @@ import bfr
 
 
 class Cluster:
-    """
+    """ A Cluster summarizes data of included points.
 
     Attributes
     ----------
@@ -27,7 +27,7 @@ class Cluster:
 
 
 def initiate_clusters(initial_points, model):
-    """
+    """ Updates the model with the initial cluster centers specified in initial_points.
 
     Parameters
     ----------
@@ -151,7 +151,9 @@ def random_points(nof_points, points, seed=None):
     -------
     initial points : numpy.matrix
         The randomly chosen points
+
     """
+
     max_index = len(points) - 1
     random.seed(seed)
     idx = random.sample(range(max_index), nof_points)
