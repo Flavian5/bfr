@@ -1,17 +1,16 @@
-# Project Title
-Clustering with BFR
+# Clustering with BFR
 ## Synopsis
 BFR is an algorithm for clustering large databases.
 BFR summarizes clusters using two main attributes:
-+Sum in each dimension
-+Sum of squares in each dimension
+* Sum in each dimension
+* Sum of squares in each dimension
 The sum and sum of squares allows efficient computation of the mean (centroid) and standard deviation.
 The cluster is represented by the centroid and spread (standard deviation)
 For each point added to a cluster, the sum and sum of squares are updated
 The BFR model contains three sets:
-+The discard set
-+The compress set
-+The retain set
+* The discard set
+* The compress set
+* The retain set
 The discard set contains the main clusters.
 Points within a distance threshold of the closest centroid in the discard set will be included in that cluster.
 The compress set contains clusters of points which are far from main clusters but close to each other.
