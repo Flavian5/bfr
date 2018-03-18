@@ -23,7 +23,16 @@ Points within a distance threshold of the closest centroid in the discard set wi
 The compress set contains clusters of points which are far from main clusters but close to each other
 
 The retain set contains points which are far from each other and far from any main cluster
+## Code Examples
+    vectors = numpy.ones((10, 3))
 
+    model = bfr.Model(dimensions=3, nof_clusters=5, mahalanobis_factor=3, euclidean_threshold=10)
+    model.create(vectors)
+
+    more_vectors = numpy.zeros((5, 3))
+    model.update(more_vectors)
+
+    model.predict(vectors[2])
 ## Getting Started
 git clone https://github.com/jeppeb91/bfr
 ### Prerequisites

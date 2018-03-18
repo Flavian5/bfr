@@ -86,7 +86,7 @@ class Model:
         bfr.initiate_clusters(initial_points, self)
         return bfr.cluster_points(points, self, bfr.zerofree_variances)
 
-    def update_model(self, points, idx=0):
+    def update(self, points, idx=0):
         """
 
         Parameters
@@ -136,7 +136,7 @@ class Model:
         if self.initialize(points, initial_points):
             self.threshold_fun = bfr.mahalanobis
             self.threshold = self.mahal_threshold
-            self.update_model(points)
+            self.update(points)
             return True
         return False
 
