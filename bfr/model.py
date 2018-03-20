@@ -1,7 +1,10 @@
 """This is a module defining bfr"""
 import numpy
-import bfr
-
+from . import model_funs
+from . import objectives
+from . import point_funs
+from . import set_funs
+from . import cluster
 
 class Model:
     """ A bfr model
@@ -53,42 +56,14 @@ class Model:
         self.eucl_threshold = kwargs.pop('euclidean_threshold', 0.2)
         self.merge_threshold = kwargs.pop('merge_threshold', 2.5)
         self.threshold = self.eucl_threshold
-        self.threshold_fun = bfr.euclidean
-        self.distance_fun = bfr.euclidean
+        self.threshold_fun = cluster.euclidean
+        self.distance_fun = cluster.euclidean
         self.dimensions = kwargs.pop('dimensions')
         self.nof_clusters = kwargs.pop('nof_clusters')
         self.mahal_threshold = self.mahal_threshold * numpy.sqrt(self.dimensions)
         self.discard = []
         self.compress = []
         self.retain = []
-
-    def initialize(self, points, initial_points=None):
-        """ Initializes clusters using points and optionally specified initial points.
-
-        Parameters
-        ----------
-        points : numpy.matrix
-            Matrix with rows consisting of points. The points should
-            have the same dimensionality as the model.
-
-        initial_points : numpy.matrix
-            Matrix with rows that will be used as the initial centers.
-            The points should have the same dimensionality as the model
-            and the number of points should be equal to the number of clusters.
-
-        Returns
-        -------
-        index : int
-            Returns the row index to the first point not included in the model.
-            Note : the point may be numpy.nan if it was randomly picked by
-            random points.
-
-        """
-
-        if initial_points is None:
-            initial_points = bfr.random_points(self.nof_clusters, points, 100)
-        bfr.initiate_clusters(initial_points, self)
-        return bfr.cluster_points(points, self, bfr.zerofree_variances)
 
     def update(self, points, idx=0):
         """
@@ -109,9 +84,9 @@ class Model:
 
         """
 
-        next_idx = bfr.cluster_points(points[idx:], self, bfr.finish_points)
+        next_idx = model_funs.cluster_points(points[idx:], self, objectives.finish_points)
         if next_idx:
-            bfr.update_compress(self, 100)
+            set_funs.update_compress(self, 100)
             return True
         return False
 
@@ -137,8 +112,8 @@ class Model:
 
         """
 
-        if self.initialize(points, initial_points):
-            self.threshold_fun = bfr.mahalanobis
+        if model_funs.initialize(self, points, initial_points):
+            self.threshold_fun = cluster.mahalanobis
             self.threshold = self.mahal_threshold
             self.update(points)
             return True
@@ -170,12 +145,12 @@ class Model:
 
         for idx in range(nof_predictions):
             point = points[idx]
-            predictions[idx] = bfr.predict_point(point, self, outlier_detecion)
+            predictions[idx] = model_funs.predict_point(point, self, outlier_detecion)
         return predictions
 
     def finalize(self):
-        bfr.finalize_set(self.compress, self)
-        bfr.finalize_set(self.discard, self)
+        set_funs.finalize_set(self.compress, self)
+        set_funs.finalize_set(self.discard, self)
 
     def error(self, points):
-        return bfr.eucl_error(self, points)
+        return model_funs.eucl_error(self, points)
