@@ -37,12 +37,14 @@ class MathTests(unittest.TestCase):
         self.assertEqual(cluster.sums_sq[0], 5, "Incorrect sums_sq")
         self.assertEqual(bfr.mean(cluster)[0], 1.5, "Incorrect mean")
         self.assertEqual(bfr.std_dev(cluster)[0], 0.5, "Incorrect std_dev")
+
     def test_closest(self):
         """ Tests that no other centroid is closer than the suggested closest
         -------
 
         """
-        closest_cluster = bfr.closest(self.point, self.clusters, bfr.euclidean)
+        closest_idx = bfr.closest(self.point, self.clusters, bfr.euclidean)
+        closest_cluster = self.clusters[closest_idx]
         for cluster in self.clusters:
             min_dist = bfr.euclidean(self.point, closest_cluster)
             distance = bfr.euclidean(self.point, cluster)

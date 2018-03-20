@@ -18,6 +18,9 @@ class Model:
     threshold : float
         The current default threshold used by the model
 
+    merge_threshold : float
+        Two sets will be merged if they
+
     threshold_fun : function
         The current default function for determining if a point and a cluster
         are considered close. The function should accept a point and a cluster
@@ -46,8 +49,9 @@ class Model:
 
     """
     def __init__(self, **kwargs):
-        self.mahal_threshold = kwargs.pop('mahalanobis_factor', 2)
-        self.eucl_threshold = kwargs.pop('euclidean_threshold', 3)
+        self.mahal_threshold = kwargs.pop('mahalanobis_factor', 3)
+        self.eucl_threshold = kwargs.pop('euclidean_threshold', 0.2)
+        self.merge_threshold = kwargs.pop('merge_threshold', 2.5)
         self.threshold = self.eucl_threshold
         self.threshold_fun = bfr.euclidean
         self.distance_fun = bfr.euclidean
@@ -82,7 +86,7 @@ class Model:
         """
 
         if initial_points is None:
-            initial_points = bfr.random_points(self.nof_clusters, points)
+            initial_points = bfr.random_points(self.nof_clusters, points, 100)
         bfr.initiate_clusters(initial_points, self)
         return bfr.cluster_points(points, self, bfr.zerofree_variances)
 
@@ -107,9 +111,9 @@ class Model:
 
         next_idx = bfr.cluster_points(points[idx:], self, bfr.finish_points)
         if next_idx:
+            bfr.update_compress(self, 100)
             return True
         return False
-
 
     def create(self, points, initial_points=None):
         """ Creates a bfr model from points using the initial points specified in
@@ -140,13 +144,18 @@ class Model:
             return True
         return False
 
-    def predict(self, point):
+    def predict(self, points, outlier_detecion=False):
         """ Predicts which cluster a point belongs to.
 
         Parameters
         ----------
-        point : numpy.ndarray
-            The point to be predicted
+        points : numpy.matrix
+            Matrix with rows consisting of points. The points should
+            have the same dimensionality as the model.
+
+        outlier_detection : bool
+            If True, outliers will be predicted with -1.
+            If False, predictions will not consider thresholds
 
         Returns
         -------
@@ -156,9 +165,17 @@ class Model:
             default threshold_fun and threshold)
 
         """
+        nof_predictions = len(points)
+        predictions = numpy.zeros(nof_predictions)
 
-        closest_cluster = bfr.closest(point, self.discard, bfr.mahalanobis)
-        idx = self.discard.index(closest_cluster)
-        if self.distance_fun(point, closest_cluster) < self.threshold:
-            return idx
-        return -1
+        for idx in range(nof_predictions):
+            point = points[idx]
+            predictions[idx] = bfr.predict_point(point, self, outlier_detecion)
+        return predictions
+
+    def finalize(self):
+        bfr.finalize_set(self.compress, self)
+        bfr.finalize_set(self.discard, self)
+
+    def error(self, points):
+        return bfr.eucl_error(self, points)

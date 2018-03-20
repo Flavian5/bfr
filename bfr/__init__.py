@@ -12,5 +12,10 @@ from .lib import random_points
 from .lib import used
 from .lib import cluster_points
 from .lib import initiate_clusters
+from .lib import merge_clusters
+from .lib import update_compress
+from .lib import finalize_set
+from .lib import predict_point
+from .lib import eucl_error
 from .objectives import finish_points
 from .objectives import zerofree_variances

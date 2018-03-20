@@ -1,6 +1,6 @@
 """This module contains mathematical functions used in bfr"""
 import numpy
-
+import bfr
 
 def has_variance(cluster):
     """ Checks if a cluster has zero variance/std_dev in any dimension
@@ -40,6 +40,7 @@ def std_dev(cluster):
     expected_x2 = cluster.sums_sq / cluster.size
     expected_x = cluster.sums / cluster.size
     variance = expected_x2 - (expected_x ** 2)
+
     return numpy.sqrt(variance)
 
 
@@ -60,6 +61,26 @@ def mean(cluster):
 
     return cluster.sums / cluster.size
 
+def euclidean_points(point, other_point):
+    """ Computes the euclidean distance between a point and another point
+    d(v, w) = ||v - w|| = sqrt(sum(v_i - w_i)²)
+
+    Parameters
+    ----------
+    point : numpy.ndarray
+        Vector with the same dimensionality as the bfr model
+
+    other_point : numpy.ndarray
+        Vector with the same dimensionality as the bfr model
+
+    Returns
+    -------
+
+    """
+    diff = point - other_point
+    sum_squared = numpy.dot(diff, diff)
+    return numpy.sqrt(sum_squared)
+
 
 def euclidean(point, cluster):
     """ Computes the euclidean distance between a point and the mean of a cluster
@@ -77,10 +98,8 @@ def euclidean(point, cluster):
     Euclidean distance : float
 
     """
-
-    diff = point - mean(cluster)
-    sum_squared = numpy.dot(diff, diff)
-    return numpy.sqrt(sum_squared)
+    centroid = mean(cluster)
+    return euclidean_points(point, centroid)
 
 
 def mahalanobis(point, cluster):
