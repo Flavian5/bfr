@@ -212,6 +212,18 @@ def cluster_point(point, model):
 
 
 def std_check(cluster, other_cluster, threshold):
+    """
+
+    Parameters
+    ----------
+    cluster
+    other_cluster
+    threshold
+
+    Returns
+    -------
+
+    """
     merged = merge_clusters(cluster, other_cluster)
     std = std_dev(merged)
     above_th = numpy.where(std > threshold)
@@ -222,7 +234,7 @@ def std_check(cluster, other_cluster, threshold):
 
 def std_dev(cluster):
     """ Computes the standard deviation within each dimension of a cluster.
-    V(x) = E(x²) - (E(x))²
+    V(x) = E(x^2) - (E(x))^2
     sd(x) = sqrt(V(x))
 
     Parameters

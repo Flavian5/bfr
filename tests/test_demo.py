@@ -10,13 +10,13 @@ class TestClustering(unittest.TestCase):
     #Generating test data
     dimensions = 2
     nof_clusters = 5
-    vectors, clusters = make_blobs(n_samples=1000, cluster_std=1,
+    vectors, clusters = make_blobs(n_samples=10000, cluster_std=1,
                                    n_features=dimensions, centers=nof_clusters,
                                    shuffle=True)
 
-    model = bfr.Model(mahalanobis_factor=3, euclidean_threshold=1.0,
+    model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
                       merge_threshold=10.0, dimensions=dimensions,
-                      init_rounds=8, nof_clusters=nof_clusters)
+                      init_rounds=40, nof_clusters=nof_clusters)
     model.create(vectors)
     model.finalize()
     print(model.error(vectors))

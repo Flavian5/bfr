@@ -66,14 +66,13 @@ def finalize_set(clusters, model):
 def update_compress(model):
     if len(model.compress) == 1:
         return
-    for clust in model.compress:
+    for cluster in model.compress:
         clust = model.compress.pop(0)
         centroid = clustlib.mean(clust)
         closest_idx = clustlib.closest(centroid, model.compress, clustlib.mahalanobis)
         closest_cluster = model.compress[closest_idx]
         if clustlib.std_check(clust, closest_cluster, model.merge_threshold):
-            model.compress.pop(closest_idx)
             merged = clustlib.merge_clusters(clust, closest_cluster)
-            model.compress.append(merged)
+            model.compress[closest_idx] = merged
             return update_compress(model)
-        model.compress.append(closest_cluster)
+        model.compress.append(clust)

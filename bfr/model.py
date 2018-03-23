@@ -8,6 +8,7 @@ from . import setlib
 from . import clustlib
 from . import error
 
+from functools import reduce
 
 class Model:
     """ A bfr model
@@ -145,6 +146,7 @@ class Model:
         setlib.finalize_set(self.retain, self)
         self.compress = []
         self.retain = []
+
 
     def predict(self, points, outlier_detection=False):
         """ Predicts which cluster a point belongs to.
