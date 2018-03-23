@@ -1,10 +1,13 @@
 """This is a module defining bfr"""
+import sys
 import numpy
-from . import model_funs
-from . import objectives
-from . import point_funs
-from . import set_funs
-from . import cluster
+
+from . import modellib
+from . import objective
+from . import setlib
+from . import clustlib
+from . import error
+
 
 class Model:
     """ A bfr model
@@ -13,21 +16,25 @@ class Model:
     ----------
     mahal_threshold : float
         Nearness of point and cluster is determined by
-        mahalanobis distance < threshold * sqrt(dimensions)
+        mahalanobis distance < mahal_threshold * sqrt(dimensions)
 
     eucl_threshold : float
-        Nearness of two points is determined by Euclidean distance < threshold
-
-    threshold : float
-        The current default threshold used by the model
-
-    merge_threshold : float
-        Two sets will be merged if they
+        Nearness of a point and a cluster is determined by
+        Euclidean distance(point,cluster) < eucl_threshold
 
     threshold_fun : function
         The current default function for determining if a point and a cluster
         are considered close. The function should accept a point and a cluster
         and return a float.
+
+    threshold : float
+        The current default threshold used by the model. Should point to eucl_threshold when the
+        current threshold_fun is Euclidean. Should point to mahal_threshold when the threshold_fun
+        is mahalanobis.
+
+    merge_threshold : float
+        Two cluster in the compress set will be merged if their combined std_dev
+        is less than merge_threshold in each dimension
 
     distance_fun : function
         The current default function for finding the closest cluster of a point.
@@ -52,55 +59,34 @@ class Model:
 
     """
     def __init__(self, **kwargs):
-        self.mahal_threshold = kwargs.pop('mahalanobis_factor', 3)
-        self.eucl_threshold = kwargs.pop('euclidean_threshold', 0.2)
-        self.merge_threshold = kwargs.pop('merge_threshold', 2.5)
+        self.mahal_threshold = kwargs.pop('mahalanobis_factor', 3.0)
+        self.eucl_threshold = kwargs.pop('euclidean_threshold', "error")
+        self.merge_threshold = kwargs.pop('merge_threshold', "error")
+        self.init_rounds = kwargs.pop('init_rounds', 5)
+        self.dimensions = kwargs.pop('dimensions', "error")
+        self.nof_clusters = kwargs.pop('nof_clusters', "error")
+
+        self.threshold_fun = clustlib.euclidean
         self.threshold = self.eucl_threshold
-        self.threshold_fun = cluster.euclidean
-        self.distance_fun = cluster.euclidean
-        self.dimensions = kwargs.pop('dimensions')
-        self.nof_clusters = kwargs.pop('nof_clusters')
+        self.distance_fun = clustlib.euclidean
         self.mahal_threshold = self.mahal_threshold * numpy.sqrt(self.dimensions)
+
         self.discard = []
         self.compress = []
         self.retain = []
+        if not error.confirm_attributes(self):
+            raise AttributeError("bfr.model has incorrect attributes")
 
-    def update(self, points, idx=0):
-        """
-
+    def create(self, input_points, initial_points=None):
+        """ Creates a bfr model from input_points optionally using
+        the initial points specified in initial points.
         Parameters
         ----------
-        points : numpy.matrix
+        input_points : numpy.ndarray
             Matrix with rows consisting of points. The points should
             have the same dimensionality as the model.
 
-        idx : int
-            The first row index from which the model will be updated.
-
-        Returns
-        -------
-        bool
-            True if the clustering clusters all points. False otherwise
-
-        """
-
-        next_idx = model_funs.cluster_points(points[idx:], self, objectives.finish_points)
-        if next_idx:
-            set_funs.update_compress(self, 100)
-            return True
-        return False
-
-    def create(self, points, initial_points=None):
-        """ Creates a bfr model from points using the initial points specified in
-        initial points.
-
-        Parameters
-        ----------
-        points : numpy.matrix
-            Matrix with rows consisting of points. The points should
-            have the same dimensionality as the model.
-
-        initial_points : numpy.matrix
+        initial_points : numpy.ndarray
             Matrix with rows that will be used as the initial centers.
             The points should have the same dimensionality as the model
             and the number of points should be equal to the number of clusters.
@@ -111,15 +97,56 @@ class Model:
             True if the model was succesfully created. False otherwise.
 
         """
-
-        if model_funs.initialize(self, points, initial_points):
-            self.threshold_fun = cluster.mahalanobis
+        if not error.confirm_create(input_points, self):
+            raise ValueError("Incorrect points or model attributes")
+        points = numpy.copy(input_points)
+        next_idx = modellib.initialize(points, self, initial_points)
+        if next_idx:
+            self.threshold_fun = clustlib.mahalanobis
             self.threshold = self.mahal_threshold
-            self.update(points)
+            self.update(points, next_idx)
             return True
+        sys.stderr.write("Warning: bfr.Model created but never finished initialization phase")
         return False
 
-    def predict(self, points, outlier_detecion=False):
+    def update(self, input_points, next_idx=0):
+        """ Updates a model given input_points. next_idx specifies which row of the input_points
+        matrix to start with. Leave at 0 to include all points.
+
+        Parameters
+        ----------
+        input_points : numpy.matrix
+            Matrix with rows consisting of points. The points should
+            have the same dimensionality as the model.
+
+        next_idx : int
+            The next row index of points from which the model will be updated.
+
+        Returns
+        -------
+        bool
+            True if the clustering clusters all points. False otherwise
+
+        """
+        if not error.confirm_update(input_points, self):
+            return False
+        next_idx = modellib.cluster_points(input_points[next_idx:], self, objective.finish_points)
+        if next_idx:
+            setlib.update_compress(self)
+            return True
+        sys.stderr.write("Warning: All points not clustered")
+        return False
+
+    def finalize(self):
+        if not error.confirm_attributes(self):
+            sys.stderr.write("Warning: bfr.Model attributes tampered with")
+            return
+        setlib.finalize_set(self.compress, self)
+        setlib.finalize_set(self.retain, self)
+        self.compress = []
+        self.retain = []
+
+    def predict(self, points, outlier_detection=False):
         """ Predicts which cluster a point belongs to.
 
         Parameters
@@ -140,17 +167,14 @@ class Model:
             default threshold_fun and threshold)
 
         """
+        error.confirm_predict(points, self)
         nof_predictions = len(points)
         predictions = numpy.zeros(nof_predictions)
-
         for idx in range(nof_predictions):
             point = points[idx]
-            predictions[idx] = model_funs.predict_point(point, self, outlier_detecion)
-        return predictions
-
-    def finalize(self):
-        set_funs.finalize_set(self.compress, self)
-        set_funs.finalize_set(self.discard, self)
+            predictions[idx] = modellib.predict_point(point, self, outlier_detection)
+        return predictions.astype(int)
 
     def error(self, points):
-        return model_funs.eucl_error(self, points)
+        error.confirm_error(points, self)
+        return modellib.rss_error(points, self)

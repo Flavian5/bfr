@@ -1,14 +1,16 @@
-import bfr
-from . import point_funs
-from . import cluster
-from . import objectives
+import numpy
+from . import ptlib
+from . import clustlib
+from . import objective
 
 
-def initialize(model, points, initial_points=None):
+def initialize(points, model, initial_points=None):
     """ Initializes clusters using points and optionally specified initial points.
 
     Parameters
     ----------
+    model : bfr.model
+
     points : numpy.matrix
         Matrix with rows consisting of points. The points should
         have the same dimensionality as the model.
@@ -28,9 +30,10 @@ def initialize(model, points, initial_points=None):
     """
 
     if initial_points is None:
-        initial_points = point_funs.random_points(model.nof_clusters, points, 100)
+        initial_points = ptlib.random_points(points, model, initial_points)
     initiate_clusters(initial_points, model)
-    return cluster_points(points, model, objectives.zerofree_variances)
+    next_idx = cluster_points(points, model, objective.zerofree_variances)
+    return next_idx
 
 
 def initiate_clusters(initial_points, model):
@@ -48,9 +51,9 @@ def initiate_clusters(initial_points, model):
     """
 
     for point in initial_points:
-        clust = cluster.Cluster(model.dimensions)
-        cluster.update_cluster(point, clust)
-        model.discard.append(clust)
+        cluster = clustlib.Cluster(model.dimensions)
+        clustlib.update_cluster(point, cluster)
+        model.discard.append(cluster)
 
 
 def cluster_points(points, model, objective_fun):
@@ -65,21 +68,21 @@ def cluster_points(points, model, objective_fun):
     model : bfr.Model
 
     objective_fun : function
-        The objective_fun determines when the clustering has been succesful.
-        The function should take an int (index), the points and a model as arguments
-        and return a bool.
+        The objective_fun determines when a clustering has been succesful.
+        The function should take an int (index), numpy.ndarray with points and a model as arguments.
+        It should return a bool.
 
     Returns
     -------
-    bool
-        True if objective is reached, False otherwise.
+    next_idx : int
+        The next row to cluster
 
     """
 
     for idx, point in enumerate(points):
+        clustlib.cluster_point(point, model)
         if objective_fun(idx, points, model):
             return idx + 1
-        cluster.cluster_point(point, model)
     return False
 
 
@@ -99,7 +102,7 @@ def predict_point(point, model, outlier_detecion=False):
         default threshold_fun and threshold)
 
         """
-    closest_idx = cluster.closest(point, model.discard, model.distance_fun)
+    closest_idx = clustlib.closest(point, model.discard, model.distance_fun)
     if not outlier_detecion:
         return closest_idx
     if model.distance_fun(point, model.discard[closest_idx]) < model.threshold:
@@ -107,15 +110,12 @@ def predict_point(point, model, outlier_detecion=False):
     return -1
 
 
-def eucl_error(model, points, outlier_detection=False):
+def rss_error(points, model, outlier_detection=False):
     predictions = model.predict(points, outlier_detection)
-    centroids = list(map(lambda clust: cluster.mean(clust), model.retain))
     error = 0
     for idx, point in enumerate(points):
         prediction = predictions[idx]
-        print("pred", point)
-        print(error)
-        if not prediction == -1 and not point_funs.used(point):
-            clust = model.discard[int(prediction)]
-            error += cluster.euclidean(point, clust)
+        if not prediction == -1 and not ptlib.used(point):
+            cluster = model.discard[prediction]
+            error += clustlib.sum_squared_diff(point, cluster)
     return error

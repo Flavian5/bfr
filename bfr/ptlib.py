@@ -1,10 +1,26 @@
 import random
 import numpy
 
+def sum_squared_diff(point, other_point):
+    """ Computes the sum of dimensions of (point - other_point) ^ 2
+
+    Parameters
+    ----------
+    point : numpy.ndarray
+        Vector with the same dimensionality as the bfr model
+
+    other_point : numpy.ndarray
+        Vector with the same dimensionality as the bfr model
+    Returns
+    -------
+
+    """
+    diff = point - other_point
+    return numpy.dot(diff, diff)
 
 def euclidean(point, other_point):
     """ Computes the euclidean distance between a point and another point
-    d(v, w) = ||v - w|| = sqrt(sum(v_i - w_i)²)
+    d(v, w) = ||v - w|| = sqrt(sum(v_i - w_i)^2)
 
     Parameters
     ----------
@@ -18,12 +34,11 @@ def euclidean(point, other_point):
     -------
 
     """
-    diff = point - other_point
-    sum_squared = numpy.dot(diff, diff)
-    return numpy.sqrt(sum_squared)
+    sq_diff = sum_squared_diff(point, other_point)
+    return numpy.sqrt(sq_diff)
 
 
-def deltas(points):
+def sum_all_euclideans(points):
     total = 0
     for point in points:
         diffs = points - point
@@ -48,7 +63,7 @@ def used(point):
     return numpy.isnan(point[0])
 
 
-def random_points(nof_points, points, rounds, seed=None):
+def random_points(points, model, seed=None):
     """ Returns a number of random points from points. Marks the selected points
     as used by setting them to numpy.nan
 
@@ -73,17 +88,16 @@ def random_points(nof_points, points, rounds, seed=None):
         The round of random points which maximizes the distance between all
 
     """
-
     max_index = len(points) - 1
     random.seed(seed)
     samples = []
     scores = []
-    for round_idx in range(rounds):
-        idx = random.sample(range(max_index), nof_points)
+    for round_idx in range(model.init_rounds):
+        idx = random.sample(range(max_index), model.nof_clusters)
         sample_points = points[idx]
-        delta_sum = deltas(sample_points)
+        spread_score = sum_all_euclideans(sample_points)
         samples.append(idx)
-        scores.append(delta_sum)
+        scores.append(spread_score)
     best_spread = numpy.argmax(scores)
     idx = samples[best_spread]
     initial_points = points[idx]

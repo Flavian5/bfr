@@ -1,8 +1,8 @@
 "This is the package bfr"
 from .model import Model
-from . import cluster
-from . import model_funs
-from . import point_funs
-from . import set_funs
-from . import objectives
+from . import clustlib
+from . import modellib
+from . import ptlib
+from . import setlib
+from . import objective
 

@@ -21,7 +21,7 @@ def finish_points(idx, points, _):
 
 
 def zerofree_variances(_, __, model):
-    """ Used to determine when all clusters of the retain set have non zero variance
+    """ Used to determine when all clusters of the discard set have non zero variance
     in all dimensions
 
     Parameters
@@ -37,4 +37,6 @@ def zerofree_variances(_, __, model):
     """
 
     has_variances = filter(lambda cluster: cluster.has_variance, model.discard)
-    return len(list(has_variances)) == model.nof_clusters
+    with_variances = list(has_variances)
+    zerofree_discard = len(with_variances) == len(model.discard)
+    return zerofree_discard

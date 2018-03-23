@@ -1,7 +1,7 @@
 import bfr
 import numpy
-from . import point_funs
-from . import set_funs
+from . import ptlib
+from . import setlib
 
 
 class Cluster:
@@ -60,7 +60,8 @@ def closest(point, clusters, nearness_fun):
 
     Returns
     -------
-    cluster : The cluster with the closest mean (center)
+    min_idx : int
+        The index of the cluster with the closest mean (center)
 
     """
 
@@ -69,7 +70,7 @@ def closest(point, clusters, nearness_fun):
     return min_idx
 
 
-def merge_clusters(clust, other_cluster):
+def merge_clusters(cluster, other_cluster):
     """
 
     Parameters
@@ -86,12 +87,12 @@ def merge_clusters(clust, other_cluster):
         Cluster with updated sums, sums_sq, size and has_variance
 
     """
-    dimensions = len(clust.sums)
+    dimensions = len(cluster.sums)
     result = Cluster(dimensions)
-    result.sums = clust.sums + other_cluster.sums
-    result.sums_sq = clust.sums_sq + other_cluster.sums_sq
-    result.has_variance = clust.has_variance & other_cluster.has_variance
-    result.size = clust.size + other_cluster.size
+    result.sums = cluster.sums + other_cluster.sums
+    result.sums_sq = cluster.sums_sq + other_cluster.sums_sq
+    result.size = cluster.size + other_cluster.size
+    result.has_variance = has_variance(result)
     return result
 
 
@@ -148,7 +149,12 @@ def euclidean(point, cluster):
 
     """
     centroid = mean(cluster)
-    return point_funs.euclidean(point, centroid)
+    return ptlib.euclidean(point, centroid)
+
+
+def sum_squared_diff(point, cluster):
+    centroid = mean(cluster)
+    return ptlib.sum_squared_diff(point, centroid)
 
 
 def mahalanobis(point, cluster):
@@ -196,13 +202,13 @@ def cluster_point(point, model):
 
     """
 
-    if point_funs.used(point):
+    if ptlib.used(point):
         return
-    assigned = set_funs.try_include(point, model.discard, model)
+    assigned = setlib.try_include(point, model.discard, model)
     if not assigned:
-        assigned = set_funs.try_include(point, model.compress, model)
+        assigned = setlib.try_include(point, model.compress, model)
     if not assigned:
-        set_funs.try_retain(point, model)
+        setlib.try_retain(point, model)
 
 
 def std_check(cluster, other_cluster, threshold):
