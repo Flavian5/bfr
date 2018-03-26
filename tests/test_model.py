@@ -9,8 +9,8 @@ from sklearn.datasets.samples_generator import make_blobs
 DIMENSIONS = 2
 NOF_POINTS = 5
 NOF_CLUSTERS = 5
-model = bfr.Model(mahalanobis_factor=3, euclidean_threshold=5000.0,
-                  merge_threshold=10.0, dimensions=DIMENSIONS,
+model = bfr.Model(mahalanobis_factor=3, euclidean_threshold=1.5,
+                  merge_threshold=1.95, dimensions=DIMENSIONS,
                   init_rounds=10, nof_clusters=NOF_CLUSTERS)
 INFINITY = 13371337.0
 point = numpy.ones(2)

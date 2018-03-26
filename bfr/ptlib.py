@@ -103,3 +103,46 @@ def random_points(points, model, seed=None):
     initial_points = points[idx]
     points[idx] = numpy.nan
     return initial_points
+
+
+def best_spread(points, model, seed=None):
+    """
+
+    Parameters
+    ----------
+    points : numpy.matrix
+        The points from which the random points will be picked.
+        Randomly picked points will be set to numpy.nan
+
+    model : bfr.Model
+
+    seed : int
+        Sets the random seed
+
+    Returns
+    -------
+
+    """
+    max_index = len(points) - 1
+    random.seed(seed)
+    chosen_idx = random.sample(range(max_index), 1)
+    for cluster_idx in range(model.nof_clusters - 1):
+        candidate_idx = random.sample(range(max_index), model.init_rounds)
+        idx = max_mindist(points, chosen_idx, candidate_idx)
+        chosen_idx.append(idx)
+    initial_points = points[chosen_idx]
+    points[chosen_idx] = numpy.nan
+    return initial_points
+
+
+def max_mindist(points, chosen, candidates):
+    # Maximize min distance by picking one of the candidates
+    distances = numpy.zeros((len(candidates), len(chosen)))
+    for row, candidate_idx in enumerate(candidates):
+        for column, chosen_idx in enumerate(chosen):
+            chose = points[chosen_idx]
+            candidate = points[candidate_idx]
+            distances[row][column] = euclidean(chose, candidate)
+    mins = numpy.amin(distances, axis=1)
+    highest_min_idx = numpy.argmax(mins)
+    return candidates[highest_min_idx]

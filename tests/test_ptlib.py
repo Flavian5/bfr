@@ -88,6 +88,14 @@ class PtlibTests(unittest.TestCase):
                 used += 1
         self.assertEqual(NOF_CLUSTERS, used, "Remaining points incorrect")
 
-
+    def test_max_mindist(self):
+        points = numpy.ones((6, 2))
+        points[0] = point
+        points[1] = point * 2
+        points[2] = point * 3
+        points[3] = point * 4
+        points[4] = point * 5
+        points[5] = point * 6
+        ptlib.max_mindist(points, [0, 1], [2,3,4,5])
 if __name__ == '__main__':
     unittest.main()

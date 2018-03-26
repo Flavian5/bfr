@@ -225,9 +225,14 @@ def std_check(cluster, other_cluster, threshold):
 
     """
     merged = merge_clusters(cluster, other_cluster)
-    std = std_dev(merged)
-    above_th = numpy.where(std > threshold)
-    if numpy.any(above_th):
+    merged_std = std_dev(merged)
+    cluster_std = std_dev(cluster)
+    other_std = std_dev(other_cluster)
+    threshold_vector = (cluster_std + other_std) * threshold
+    diff = merged_std - threshold_vector
+    idx = numpy.where(diff <= 0)
+    above_th = diff[idx]
+    if not above_th.size:
         return False
     return True
 
