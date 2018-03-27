@@ -40,9 +40,9 @@ When the model has considered all points, the clusters in the compress and retai
     import bfr
     import matplotlib.pyplot
     from sklearn.datasets.samples_generator import make_blobs
-   
+    
     vectors, _ = make_blobs(n_samples=1000, cluster_std=1,
-                            n_features=dimensions, centers=5,
+                            n_features=2, centers=5,
                             shuffle=True)
                                    
     model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
@@ -62,8 +62,8 @@ When the model has considered all points, the clusters in the compress and retai
     print(model.error(vectors))
     
     # Predict the cluster of the points and plot
-    predictions = self.model.predict(self.vectors, outlier_detection=True)
-    x_cord, y_cord = self.vectors.T
+    predictions = model.predict(vectors, outlier_detection=True)
+    x_cord, y_cord = vectors.T
     matplotlib.pyplot.scatter(x_cord, y_cord, c=predictions)
     matplotlib.pyplot.show()
 
