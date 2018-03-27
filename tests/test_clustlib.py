@@ -199,18 +199,17 @@ class ModellibTests(unittest.TestCase):
         model.discard = []
 
     def test_std_check(self):
-        """ Tests that the std_check evaluates to true in
+        """ Tests that the std_check evaluates to true for a set of {{1,1}, {1,1}}
+        Tests that the std_check evaluates to false when threshold is set to 0 and
+        at least one of the checked clusters have a non zero variance
 
 
         -------
 
         """
-        yet_another = numpy.ones(2)
-        yet_another[1] = 2
-        merged = clustlib.merge_clusters(ones, ones)
-        clustlib.update_cluster(yet_another, merged)
-        should_merge = clustlib.std_check(merged, ones, 1)
-        should_not = clustlib.std_check(merged, ones, 0)
+        has_std = clustlib.merge_clusters(ones, twos)
+        should_merge = clustlib.std_check(ones, ones, 1)
+        should_not = clustlib.std_check(has_std, ones, 0)
         self.assertTrue(should_merge, "Incorrect False")
         self.assertFalse(should_not, "Incorrect True")
 

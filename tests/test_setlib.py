@@ -94,9 +94,9 @@ class SetlibTests(unittest.TestCase):
         -------
 
         """
-
-        model.compress.append(ones)
-        model.compress.append(twos)
+        has_std = clustlib.merge_clusters(ones, twos)
+        model.compress.append(has_std)
+        model.compress.append(has_std)
         model.merge_threshold = -1.0
         setlib.update_compress(model)
         nof_clusters = len(model.compress)
@@ -106,7 +106,7 @@ class SetlibTests(unittest.TestCase):
         setlib.update_compress(model)
         nof_clusters = len(model.compress)
         self.assertLess(nof_clusters, 2, "Compress set Clusters did not merge when they should")
-        model.merge_threshold = 10.0
+        model.merge_threshold = INFINITY
         model.compress = []
 
 

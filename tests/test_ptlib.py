@@ -71,6 +71,7 @@ class PtlibTests(unittest.TestCase):
         points = numpy.ones((DIMENSIONS, 3))
         points[0] = numpy.nan
         self.assertTrue(ptlib.used(points[0]), "Marking as used not working")
+
     def test_random_points(self):
         """ Tests that the appropriate amount of random points are returned and
         that that the remaining points matrix is adjusted appropriately.
@@ -88,7 +89,26 @@ class PtlibTests(unittest.TestCase):
                 used += 1
         self.assertEqual(NOF_CLUSTERS, used, "Remaining points incorrect")
 
+
+    def test_best_spread(self):
+        model.init_rounds = 1
+        model.nof_clusters = 5
+        points = numpy.ones((2, 2))
+        points[0] = point
+        points[1] = point
+
+        result = ptlib.best_spread(points, model)
+        self.assertTrue(isinstance(result, numpy.ndarray))
+
+
     def test_max_mindist(self):
+        """ Tests that the index {6,6} is the furthest vector from {1,1} and {2,2}
+
+
+        -------
+
+        """
+
         points = numpy.ones((6, 2))
         points[0] = point
         points[1] = point * 2
@@ -96,6 +116,9 @@ class PtlibTests(unittest.TestCase):
         points[3] = point * 4
         points[4] = point * 5
         points[5] = point * 6
-        ptlib.max_mindist(points, [0, 1], [2,3,4,5])
+        idx = ptlib.max_mindist(points, [0, 1], [2, 3, 4, 5])
+        self.assertEqual(idx, 5, "Incorrect furthest index")
+
+
 if __name__ == '__main__':
     unittest.main()
