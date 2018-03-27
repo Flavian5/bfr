@@ -9,12 +9,12 @@ with open('LICENSE') as f:
 
 setup(
     name='bfr',
-    version='0.1.0',
+    version='0.0.0b1',
     description='Clustering using the BFR algorithm',
     long_description=readme,
     author='Jesper Berglund',
     author_email='jesbergl@kth.se',
     url='TODO',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude='tests')
 )
