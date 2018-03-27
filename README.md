@@ -105,7 +105,7 @@ Activate your virtual environment
     
     make init (or pip install -r requirements.txt)
     
-    pip install -e ./bfr
+    pip install -e path/bfr
 ### Prerequisites
 If you are on a system supporting make: make init
 
