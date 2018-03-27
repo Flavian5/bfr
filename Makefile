@@ -5,4 +5,4 @@ test:
 	nosetests tests --nocapture
 
 lint:
-	pylint ./bfr/*.py ./tests/*.py ||:
+	pylint ./bfr/*.py ||:
