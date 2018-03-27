@@ -98,6 +98,14 @@ nof_clusters : int
 
 ## Getting Started
 git clone https://github.com/jeppeb91/bfr
+
+Activate your virtual environment
+
+cd path/bfr
+
+make init
+
+pip install bfr
 ### Prerequisites
 If you are on a system supporting make: make init
 
