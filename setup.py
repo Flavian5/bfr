@@ -14,7 +14,7 @@ setup(
     long_description=readme,
     author='Jesper Berglund',
     author_email='jesbergl@kth.se',
-    url='TODO',
+    url='https://github.com/jeppeb91/bfr',
     license=license,
     packages=find_packages(exclude='tests')
 )
