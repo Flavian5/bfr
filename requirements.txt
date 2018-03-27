@@ -2,4 +2,5 @@ nose
 numpy
 sklearn
 pylint
-matplotlib
+
+

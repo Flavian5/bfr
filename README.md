@@ -42,12 +42,12 @@ When the model has considered all points, the clusters in the compress and retai
     from sklearn.datasets.samples_generator import make_blobs
    
     vectors, _ = make_blobs(n_samples=1000, cluster_std=1,
-                            n_features=dimensions, centers=nof_clusters,
+                            n_features=dimensions, centers=5,
                             shuffle=True)
                                    
     model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
-                      merge_threshold=2.0, dimensions=dimensions,
-                      init_rounds=40, nof_clusters=nof_clusters)
+                      merge_threshold=2.0, dimensions=2,
+                      init_rounds=40, nof_clusters=5)
     
     # Create the model using 500 vectors
     model.create(vectors[:500])
@@ -66,6 +66,35 @@ When the model has considered all points, the clusters in the compress and retai
     x_cord, y_cord = self.vectors.T
     matplotlib.pyplot.scatter(x_cord, y_cord, c=predictions)
     matplotlib.pyplot.show()
+
+## Model Attributes
+mahalanobis_factor : float
+        
+    Nearness of point and cluster is determined by
+    mahalanobis distance < mahalanobis_factor * sqrt(dimensions)
+
+euclidean_threshold : float
+    
+    Nearness of a point and a cluster is determined by
+    Euclidean distance(point,cluster) < eucl_threshold
+ 
+merge_threshold : float
+    
+    Two clusters in the compress set will be merged if their merged standard deviation
+    is less than or equal to (std_dev(cluster) + std_dev(other_cluster)) * merge_threshold.
+ 
+dimensions : int
+    
+    The dimensionality of the model
+
+init_rounds : int
+    
+    Higher integer numbers give better spread of the initial points
+
+
+nof_clusters : int
+     
+    The number of clusters (eg. K)
 
 ## Getting Started
 git clone https://github.com/jeppeb91/bfr
