@@ -18,21 +18,48 @@ The BFR model contains three sets:
 
 The discard set contains the main clusters.
 
-Points within a distance threshold of the closest centroid in the discard set will be included in that cluster
+Points within a distance threshold of the closest cluster in the discard set will be included in that cluster
 
-The compress set contains clusters of points which are far from main clusters but close to each other
+Points outside of a distance threshold of the closest cluster in the discard set 
+but within a distance threshold of the closest compress set cluster will be included in that compress set cluster
 
-The retain set contains points which are far from each other and far from any main cluster
+Points outside of a distance threshold of both discard and compress set clusters will be included in the retain set.
+
+If two points in the retain set are within a distance threshold they will be merged and moved to the compress set.
+
+When the model has considered all points, the clusters in the compress and retain set get assigned to the closest cluster in discard.
+
+
 ## Code Examples
-    vectors = numpy.ones((10, 3))
+    import bfr
+    from sklearn.datasets.samples_generator import make_blobs
+   
+    vectors, _ = make_blobs(n_samples=1000, cluster_std=1,
+                            n_features=dimensions, centers=nof_clusters,
+                            shuffle=True)
+                                   
+    model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
+                      merge_threshold=2.0, dimensions=dimensions,
+                      init_rounds=40, nof_clusters=nof_clusters)
+    
+    # Create the model using 500 vectors
+    model.create(vectors[:500])
+    
+    # Update the model using 500 other vectors
+    model.update(vectors[500:])
+    
+    # Finalize the model
+    model.finalize()
+    
+    # Print the residual sum of square error
+    print(model.error(vectors))
+    
+    # Predict the cluster of the points and plot
+    predictions = self.model.predict(self.vectors, outlier_detection=True)
+    x_cord, y_cord = self.vectors.T
+    matplotlib.pyplot.scatter(x_cord, y_cord, c=predictions)
+    matplotlib.pyplot.show()
 
-    model = bfr.Model(dimensions=3, nof_clusters=5, mahalanobis_factor=3, euclidean_threshold=10)
-    model.create(vectors)
-
-    more_vectors = numpy.zeros((5, 3))
-    model.update(more_vectors)
-
-    model.predict(vectors[2])
 ## Getting Started
 git clone https://github.com/jeppeb91/bfr
 ### Prerequisites
