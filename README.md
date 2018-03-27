@@ -38,6 +38,7 @@ When the model has considered all points, the clusters in the compress and retai
 
 ## Code Examples
     import bfr
+    import matplotlib.pyplot
     from sklearn.datasets.samples_generator import make_blobs
    
     vectors, _ = make_blobs(n_samples=1000, cluster_std=1,
