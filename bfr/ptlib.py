@@ -40,6 +40,7 @@ def euclidean(point, other_point):
     -------
 
     """
+
     sq_diff = sum_squared_diff(point, other_point)
     return numpy.sqrt(sq_diff)
 
@@ -57,6 +58,7 @@ def sum_all_euclideans(points):
     -------
     float
         The sum of all
+
     """
 
     total = 0
@@ -79,6 +81,7 @@ def used(point):
     -------
     bool
         True if the point has been used. Represented by row being numpy.nan
+
     """
 
     return numpy.isnan(point[0])

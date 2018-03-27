@@ -103,6 +103,7 @@ class Model:
             True if the model was successfully created. False otherwise.
 
         """
+
         if not error.confirm_create(input_points, self):
             raise ValueError("Incorrect points or model attributes")
         points = numpy.copy(input_points)

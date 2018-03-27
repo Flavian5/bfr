@@ -1,7 +1,6 @@
 """ This module contains the attribute checking of a bfr.Model. If a confirm_*
 function evaluates to true, the model should be able to perform the called method.
-A confirm method should be called in all methods of a bfr.Model
-"""
+A confirm method should be called in all methods of a bfr.Model"""
 
 import sys
 import traceback
