@@ -1,9 +1,25 @@
-import bfr
+""" This module contains functions mainly operating on/with
+the discard/compress/retain sets of a bfr.Model"""
+
 from . import clustlib
 from . import ptlib
 
 
 def try_retain(point, model):
+    """ Updates the retain set of model according to point. If the point is considered near
+    the centroid of a cluster in retain, the clusters get merged and moved to the compress set.
+    Distance, threshold and threshold function is given by the defaults of model.
+
+    ----------
+    point : numpy.ndarray
+
+    model : bfr.Model
+
+    Returns
+    -------
+
+    """
+
     new_cluster = clustlib.Cluster(model.dimensions)
     clustlib.update_cluster(point, new_cluster)
     if not model.retain:
@@ -26,7 +42,6 @@ def try_include(point, cluster_set, model):
     Parameters
     ----------
     point : numpy.ndarray
-        The point to try
 
     cluster_set : list
         the list of clusters to try
@@ -54,8 +69,21 @@ def try_include(point, cluster_set, model):
     return False
 
 
-def finalize_set(clusters, model):
-    for idx, cluster in enumerate(clusters):
+def finalize_set(cluster_set, model):
+    """ Assigns the clusters in cluster_set to the closest cluster in the discard set of model.
+
+    ----------
+    cluster_set : list
+        the list of clusters to finalize
+
+    model : bfr.Model
+
+    Returns
+    -------
+
+    """
+
+    for cluster in cluster_set:
         mean = clustlib.mean(cluster)
         closest_idx = clustlib.closest(mean, model.discard, model.distance_fun)
         closest_cluster = model.discard[closest_idx]
@@ -64,6 +92,19 @@ def finalize_set(clusters, model):
 
 
 def update_compress(model):
+    """ Updates the compress set by merging all clusters in the compress set which have
+    a merged std_dev <= (std_dev(compress_cluster) + std_dev(other_compress_cluster)) *
+    model.merge_threshold
+
+    Parameters
+    ----------
+    model : bfr.Model
+
+    Returns
+    -------
+
+    """
+
     if len(model.compress) == 1:
         return
     for each in model.compress:

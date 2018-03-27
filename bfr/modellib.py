@@ -1,4 +1,5 @@
-import numpy
+""" This module contains functions mainly operating on/with bfr.models."""
+
 from . import ptlib
 from . import clustlib
 from . import objective
@@ -9,20 +10,19 @@ def initialize(points, model, initial_points=None):
 
     Parameters
     ----------
-    model : bfr.model
+    points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
+        have the same dimensionality as the model.numpy.matrix
 
-    points : numpy.matrix
-        Matrix with rows consisting of points. The points should
+    model : bfr.Model
+
+    initial_points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
         have the same dimensionality as the model.
-
-    initial_points : numpy.matrix
-        Matrix with rows that will be used as the initial centers.
-        The points should have the same dimensionality as the model
-        and the number of points should be equal to the number of clusters.
 
     Returns
     -------
-    index : int
+    next_idx : int
         Returns the row index to the first point not included in the model.
         Note : the point may be numpy.nan if it was randomly picked by
         random points.
@@ -41,10 +41,9 @@ def initiate_clusters(initial_points, model):
 
     Parameters
     ----------
-    initial_points : numpy.matrix
-        Matrix with rows that will be used as the initial centers.
-        The points should have the same dimensionality as the model
-        and the number of points should be equal to the number of clusters.
+    initial_points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
+        have the same dimensionality as the model.
 
     model : bfr.Model
 
@@ -61,8 +60,8 @@ def cluster_points(points, model, objective_fun):
 
     Parameters
     ----------
-    points : numpy.matrix
-        Matrix with rows consisting of points. The points should
+    points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
         have the same dimensionality as the model.
 
     model : bfr.Model
@@ -75,7 +74,7 @@ def cluster_points(points, model, objective_fun):
     Returns
     -------
     next_idx : int
-        The next row to cluster
+        The row of the next point to cluster
 
     """
 
@@ -86,24 +85,30 @@ def cluster_points(points, model, objective_fun):
     return False
 
 
-def predict_point(point, model, outlier_detecion=False):
+def predict_point(point, model, outlier_detection=False):
     """ Predicts which cluster a point belongs to.
 
     Parameters
     ----------
     point : numpy.ndarray
-        The point to be predicted
+
+    model : bfr.Model
+
+    outlier_detection : bool
+        If True, outliers will be predicted with -1.
+        If False, predictions will not consider default threshold.
 
     Returns
     -------
-    idx : int
+    closest_idx : int
         The index of the closest cluster (defined by default distance_fun).
         Returns -1 if the point is considered an outlier (determined by
         default threshold_fun and threshold)
 
         """
+
     closest_idx = clustlib.closest(point, model.discard, model.distance_fun)
-    if not outlier_detecion:
+    if not outlier_detection:
         return closest_idx
     if model.distance_fun(point, model.discard[closest_idx]) < model.threshold:
         return closest_idx
@@ -111,6 +116,25 @@ def predict_point(point, model, outlier_detecion=False):
 
 
 def rss_error(points, model, outlier_detection=False):
+    """
+
+    Parameters
+    ----------
+    points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
+        have the same dimensionality as the model.
+
+    model : bfr.Model
+
+    outlier_detection : bool
+        If True, outliers will not be considered when computing the error.
+        If False, outliers will be considered when computing the error.
+
+    Returns
+    -------
+
+    """
+
     predictions = model.predict(points, outlier_detection)
     error = 0
     for idx, point in enumerate(points):

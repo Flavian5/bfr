@@ -1,3 +1,8 @@
+""" This module contains the attribute checking of a bfr.Model. If a confirm_*
+function evaluates to true, the model should be able to perform the called method.
+A confirm method should be called in all methods of a bfr.Model
+"""
+
 import sys
 import traceback
 import inspect
@@ -69,7 +74,8 @@ def check_clusters(points, model):
     check_attributes('_', model)
     assert model.discard, "model has no clusters"
     if model.compress or model.retain:
-        sys.stderr.write("Warning, you are predicting on a non finalized model. Expect less accuracy")
+        sys.stderr.write("Warning, you are predicting on a non finalized model."
+                         " Expect less accuracy")
 
 
 def check_points(points, model, required_nr):

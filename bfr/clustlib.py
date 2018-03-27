@@ -1,4 +1,5 @@
-import bfr
+""" This module contains functions mainly operating on/with clusters."""
+
 import numpy
 from . import ptlib
 from . import setlib
@@ -9,6 +10,9 @@ class Cluster:
 
     Attributes
     ----------
+    size : int
+        The number of points included in the cluster
+
     sums : numpy.ndarray
         Total sum of each dimension of the cluster.
 
@@ -19,6 +23,7 @@ class Cluster:
         A boolean flag which is False when a cluster has zero variance in any dimension
 
     """
+
     def __init__(self, dimensions):
         self.size = 0
         self.sums = numpy.zeros(dimensions)
@@ -34,10 +39,10 @@ def update_cluster(point, cluster):
     point : numpy.ndarray
         Vector with the same dimensionality as the bfr model
 
-    cluster : bfr.Cluster
-        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : bfr.clustlib.Cluster
 
     """
+
     cluster.size += 1
     cluster.sums += point
     cluster.sums_sq += point ** 2
@@ -45,7 +50,7 @@ def update_cluster(point, cluster):
 
 
 def closest(point, clusters, nearness_fun):
-    """ Finds the cluster of which the centroid is closest to the point
+    """ Finds the cluster of which the centroid is closest to the point.
 
     Parameters
     ----------
@@ -53,7 +58,7 @@ def closest(point, clusters, nearness_fun):
         Vector with the same dimensionality as the bfr model
 
     clusters : list
-        A list of clusters
+        A list containing bfr.clusters
 
     nearness_fun : function
         A distance function which accepts
@@ -71,22 +76,21 @@ def closest(point, clusters, nearness_fun):
 
 
 def merge_clusters(cluster, other_cluster):
-    """
+    """ Merges two clusters and returns the updated cluster.
 
     Parameters
     ----------
-    cluster : bfr.Cluster
-        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : bfr.clustlib.Cluster
 
-    other_cluster : bfr.Cluster
-        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    other_cluster : bfr.clustlib.Cluster
 
     Returns
     -------
-    cluster : bfr.Cluster
+    cluster : bfr.clustlib.Cluster
         Cluster with updated sums, sums_sq, size and has_variance
 
     """
+
     dimensions = len(cluster.sums)
     result = Cluster(dimensions)
     result.sums = cluster.sums + other_cluster.sums
@@ -101,7 +105,7 @@ def has_variance(cluster):
 
     Parameters
     ----------
-    cluster : bfr.Cluster
+    cluster : bfr.clustlib.Cluster
 
     Returns
     -------
@@ -115,7 +119,7 @@ def has_variance(cluster):
 
 
 def mean(cluster):
-    """ Computes the mean of the cluster within each dimension
+    """ Computes the mean of the cluster within each dimension.
 
     Parameters
     ----------
@@ -125,7 +129,7 @@ def mean(cluster):
     Returns
     -------
     mean (centroid): numpy.ndarray
-        The mean of each dimensions (the centroid)
+        The mean in each dimension (the centroid)
 
     """
 
@@ -140,19 +144,36 @@ def euclidean(point, cluster):
     point : numpy.ndarray
         Vector with the same dimensionality as the bfr model
 
-    cluster : bfr.Cluster
-        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : bfr.clustlib.Cluster
 
     Returns
     -------
     Euclidean distance : float
 
     """
+
     centroid = mean(cluster)
     return ptlib.euclidean(point, centroid)
 
 
 def sum_squared_diff(point, cluster):
+    """ Returns sum of squared dimensions of the difference of point and
+    clustlib.mean(cluster)
+
+    Parameters
+    ----------
+    point : numpy.ndarray
+        Vector with the same dimensionality as the bfr model
+
+    cluster : bfr.clustlib.Cluster
+
+    Returns
+    -------
+    float
+        sum of dimensions of (point - clustlib.mean(cluster)) ^ 2
+
+    """
+
     centroid = mean(cluster)
     return ptlib.sum_squared_diff(point, centroid)
 
@@ -163,14 +184,15 @@ def mahalanobis(point, cluster):
     Represents a likelihood that the point belongs to the cluster.
     Note : If the variance is zero in any dimension, that dimension will be disregarded
     when computing the distance.
+    mahal(point, cluster) = sum of dimensions of
+    (sqrt((point - clustlib.mean(cluster) / clustlib.std_dev(cluster))
 
     Parameters
     ----------
     point : numpy.ndarray
         Vector with the same dimensionality as the bfr model
 
-    cluster : bfr.Cluster
-        A cluster has the (int)size and numpy.ndarrays sums and sums_sq as attributes
+    cluster : bfr.clustlib.Cluster
 
     Returns
     -------
@@ -216,14 +238,20 @@ def std_check(cluster, other_cluster, threshold):
 
     Parameters
     ----------
-    cluster
-    other_cluster
-    threshold
+    cluster : bfr.clustlib.Cluster
+
+    other_cluster : bfr.clustlib.Cluster
+
+    threshold : float
 
     Returns
     -------
+    bool
+        True if (std_dev(cluster) + std_dev(other_cluster)) * threshold >=
+        std_dev(clustlib.merge_clusters(cluster, other_cluster))
 
     """
+
     merged = merge_clusters(cluster, other_cluster)
     merged_std = std_dev(merged)
     cluster_std = std_dev(cluster)

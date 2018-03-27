@@ -8,7 +8,9 @@ def finish_points(idx, points, _):
     ----------
     idx : int
 
-    points : numpy.matrix
+    points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
+        have the same dimensionality as the model.
 
     Returns
     -------
