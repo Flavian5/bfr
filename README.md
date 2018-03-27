@@ -103,7 +103,7 @@ Activate your virtual environment
 
 cd path/bfr
 
-make init
+make init (or pip install -r requirements.txt)
 
 pip install bfr
 ### Prerequisites
