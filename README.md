@@ -1,6 +1,12 @@
 # Clustering with BFR
+BFR is a one pass algorithm for clustering large databases.
+
+There are two main principles of the algorithm:
+* Summarize points in clusters
+
+* Make decisions which are likely directly. Push uncertain decisions into 
+the future
 ## Synopsis
-BFR is an algorithm for clustering large databases. <br />
 BFR summarizes clusters using two main attributes:
 * Sum in each dimension
 * Sum of squares in each dimension
@@ -18,10 +24,10 @@ The BFR model contains three sets:
 
 The discard set contains the main clusters.
 
-Points within a distance threshold of the closest cluster in the discard set will be included in that cluster
+Points within a distance threshold of the closest cluster in the discard set will be included in that cluster.
 
 Points outside of a distance threshold of the closest cluster in the discard set 
-but within a distance threshold of the closest compress set cluster will be included in that compress set cluster
+but within a distance threshold of the closest compress set cluster will be included in that compress set cluster.
 
 Points outside of a distance threshold of both discard and compress set clusters will be included in the retain set.
 
@@ -84,6 +90,3 @@ To be decided with Epidemic
 Bradley, Fayyad and Reina who suggested the approach
 
 [Link to the paper](https://www.aaai.org/Papers/KDD/1998/KDD98-002.pdf)
-
-
-
