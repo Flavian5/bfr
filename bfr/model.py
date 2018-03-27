@@ -86,6 +86,7 @@ class Model:
     def create(self, input_points, initial_points=None):
         """ Creates a bfr model from input_points optionally using
         the initial points specified in initial points.
+
         Parameters
         ----------
         input_points : numpy.ndarray
@@ -151,6 +152,7 @@ class Model:
         their closest center in discard. For best results, call this when the model has
         been created and (potentially) updated with all points.
 
+        Returns
         -------
 
         """
