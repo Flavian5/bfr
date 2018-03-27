@@ -105,7 +105,7 @@ cd path/bfr
 
 make init (or pip install -r requirements.txt)
 
-pip install bfr
+pip install -e ./bfr
 ### Prerequisites
 If you are on a system supporting make: make init
 
