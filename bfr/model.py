@@ -214,6 +214,21 @@ class Model:
         error.confirm_error(points, self)
         return modellib.rss_error(points, self)
 
+    def centers(self):
+        """ Returns all cluster centers
+
+        Returns
+        -------
+        means : numpy.ndarray
+            Rows correspond to centers of all clusters in the discard set
+
+        """
+
+        means = numpy.zeros((self.nof_clusters, self.dimensions))
+        for idx, cluster in enumerate(self.discard):
+            means[idx] = clustlib.mean(cluster)
+        return means
+
     def __str__(self):
         res = ""
         for idx, cluster in enumerate(self.discard):
