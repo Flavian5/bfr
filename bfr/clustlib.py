@@ -33,7 +33,8 @@ class Cluster:
     def __str__(self):
         center = str(mean(self))
         std = str((std_dev(self)))
-        return "Center: " + center + "\nStd_dev: " + std
+        size = str(self.size)
+        return "Center: " + center + "\nStd_dev: " + std + "\nsize: " + size
 
 def update_cluster(point, cluster):
     """ Updates the given cluster according to the data of point
