@@ -215,7 +215,7 @@ class Model:
         return modellib.rss_error(points, self)
 
     def centers(self):
-        """ Returns all cluster centers
+        """ Returns all cluster centers.
 
         Returns
         -------
@@ -224,6 +224,9 @@ class Model:
 
         """
 
+        if not error.confirm_centers('_', self):
+            sys.stderr.write("BFR: Incorrect model attributes")
+            return
         means = numpy.zeros((self.nof_clusters, self.dimensions))
         for idx, cluster in enumerate(self.discard):
             means[idx] = clustlib.mean(cluster)

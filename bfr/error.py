@@ -42,6 +42,10 @@ def confirm_error(points, model):
     return sanity_check(points, model, check_clusters)
 
 
+def confirm_centers(points, model):
+    return sanity_check(points, model, check_attributes)
+
+
 def check_attributes(_, model):
     assert isinstance(model.mahal_threshold, float), "mahalanobis_factor not float"
     assert isinstance(model.eucl_threshold, float), "euclidean_threshold not float"
