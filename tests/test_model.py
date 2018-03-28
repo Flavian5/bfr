@@ -27,7 +27,7 @@ arbitrary_set = [ones, ones]
 
 class ModellibTests(unittest.TestCase):
     """Test cases for the module bfr.model"""
-    created = bfr.Model(mahalanobis_factor=3, euclidean_threshold=1.5,
+    created = bfr.Model(mahalanobis_factor=3, euclidean_threshold=3.5,
                         merge_threshold=30.0, dimensions=DIMENSIONS,
                         init_rounds=100, nof_clusters=NOF_CLUSTERS)
 
