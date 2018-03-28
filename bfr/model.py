@@ -217,5 +217,5 @@ class Model:
     def __str__(self):
         res = ""
         for idx, cluster in enumerate(self.discard):
-            res += str(idx) + "\t" + str(cluster) + "\n"
+            res += str(idx) + "\n" + str(cluster) + "\n"
         return res
