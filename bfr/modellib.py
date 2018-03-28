@@ -116,7 +116,8 @@ def predict_point(point, model, outlier_detection=False):
 
 
 def rss_error(points, model, outlier_detection=False):
-    """
+    """ Compute the rss error of points given model. Optionally exclude outliers
+    in the computation of the error.
 
     Parameters
     ----------
@@ -132,6 +133,9 @@ def rss_error(points, model, outlier_detection=False):
 
     Returns
     -------
+    error : float
+        The residual sum of square error of points. Computed using points and the centers
+        in model.discard.
 
     """
 
