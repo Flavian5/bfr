@@ -38,6 +38,8 @@ def euclidean(point, other_point):
 
     Returns
     -------
+    float
+        The Euclidean distance between point and other_point
 
     """
 
