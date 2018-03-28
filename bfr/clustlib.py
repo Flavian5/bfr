@@ -30,6 +30,10 @@ class Cluster:
         self.sums_sq = numpy.zeros(dimensions)
         self.has_variance = False
 
+    def __str__(self):
+        center = str(mean(self))
+        std = str((std_dev(self)))
+        return "Center: %-*s Std_dev: %-*s" % (30, center, 30, std)
 
 def update_cluster(point, cluster):
     """ Updates the given cluster according to the data of point

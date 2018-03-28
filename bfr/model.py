@@ -213,3 +213,9 @@ class Model:
 
         error.confirm_error(points, self)
         return modellib.rss_error(points, self)
+
+    def __str__(self):
+        res = ""
+        for idx, cluster in enumerate(self.discard):
+            res += str(idx) + "\t" + str(cluster) + "\n"
+        return res
