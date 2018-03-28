@@ -226,7 +226,7 @@ class Model:
 
         if not error.confirm_centers('_', self):
             sys.stderr.write("BFR: Incorrect model attributes")
-            return
+            return None
         means = numpy.zeros((self.nof_clusters, self.dimensions))
         for idx, cluster in enumerate(self.discard):
             means[idx] = clustlib.mean(cluster)
