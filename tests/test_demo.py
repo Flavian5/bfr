@@ -18,8 +18,6 @@ class TestClustering(unittest.TestCase):
                       merge_threshold=10.0, dimensions=dimensions,
                       init_rounds=40, nof_clusters=nof_clusters)
     model.fit(vectors)
-    model.mahal_threshold = -1.0
-    model.fit(vectors)
     model.finalize()
 
     def test_plot(self):
