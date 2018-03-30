@@ -1,5 +1,6 @@
 """ This module contains functions mainly operating on/with bfr.models."""
 
+import numpy
 from . import ptlib
 from . import clustlib
 from . import objective
@@ -146,4 +147,62 @@ def rss_error(points, model, outlier_detection=False):
         if not prediction == -1 and not ptlib.used(point):
             cluster = model.discard[prediction]
             error += clustlib.sum_squared_diff(point, cluster)
+    return error
+
+
+def mahalanobis_error(points, model, outlier_detection=False):
+    """ Computes the sum of mahalanobis distances between all points and their
+    closest clusters. If outlier_detection=True, outliers are excluded.
+
+    Parameters
+    ----------
+    points : numpy.ndarray
+        (rows, dimensions) array with rows consisting of points. The points should
+        have the same dimensionality as the model.
+
+    model : bfr.Model
+
+    outlier_detection : bool
+        If True, outliers will not be considered when computing the error.
+        If False, outliers will be considered when computing the error.
+
+    Returns
+    -------
+    error : float
+        The sum of mahalanobis distances between all points and their closest cluster.
+
+    Returns
+    -------
+
+    """
+
+    predictions = model.predict(points, outlier_detection)
+    error = 0
+    for idx, point in enumerate(points):
+        prediction = predictions[idx]
+        if not prediction == -1 and not ptlib.used(point):
+            cluster = model.discard[prediction]
+            error += clustlib.mahalanobis(point, cluster)
+    return error
+
+
+def std_error(model):
+    """ Computes the sum of the standard deviation of all clusters in all dimensions.
+    Represents a measurement of spread.
+
+    Parameters
+    ----------
+    model : bfr.Model
+
+    Returns
+    -------
+    error : float
+        The sum of all cluster standard deviations in all dimensions
+
+    """
+
+    error = 0
+    for cluster in model.discard:
+        std_dev = clustlib.std_dev(cluster)
+        error += numpy.sum(std_dev)
     return error
