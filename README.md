@@ -38,35 +38,39 @@ When the model has considered all points, the clusters in the compress and retai
 
 ## Code Examples
     import bfr
-    import matplotlib.pyplot
     from sklearn.datasets.samples_generator import make_blobs
     
+    # Generate test data
     vectors, _ = make_blobs(n_samples=1000, cluster_std=1,
                             n_features=2, centers=5,
                             shuffle=True)
-                                   
+              
+    # Create the model. See below for parameter description                     
     model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
                       merge_threshold=2.0, dimensions=2,
                       init_rounds=40, nof_clusters=5)
     
-    # Create the model using 500 vectors
-    model.create(vectors[:500])
+    # Fit the model using 500 vectors
+    model.fit(vectors[:500])
     
-    # Update the model using 500 other vectors
-    model.update(vectors[500:])
+    # Fit (Update) the model using 500 other vectors
+    model.fit(vectors[500:])
     
-    # Finalize the model
+    # Finalize assigns clusters in the discard and retain set to the closest cluster in discard 
     model.finalize()
     
     # Print the residual sum of square error
     print(model.error(vectors))
     
-    # Predict the cluster of the points and plot
-    predictions = model.predict(vectors, outlier_detection=True)
-    x_cord, y_cord = vectors.T
-    matplotlib.pyplot.scatter(x_cord, y_cord, c=predictions)
-    matplotlib.pyplot.show()
+    # Predict the which cluster some points belong to.
+    # Outlier_detection=True defines that points far from their closest cluster will be identified
+    predictions = model.predict(vectors[:2], outlier_detection=True)
 
+    # Get the centers of the model as a numpy array
+    centers = model.centers()
+    
+    # Print the model
+    print(model)
 ## Model Attributes
 mahalanobis_factor : float
         
