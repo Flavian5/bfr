@@ -1,6 +1,7 @@
 """ This is a module defining the interface for bfr"""
 
 import sys
+import traceback
 import numpy
 
 from . import modellib
@@ -84,8 +85,8 @@ class Model:
         self.compress = []
         self.retain = []
         self.initialized = False
-        if not error.confirm_attributes(self):
-            raise AttributeError("bfr.model has incorrect attributes")
+
+        error.confirm_attributes(self)
 
     def fit(self, input_points, initial_points=None):
         """ Fits a bfr model with input_points optionally using
@@ -107,10 +108,11 @@ class Model:
 
         """
 
-        if not error.confirm_create(input_points, self):
-            raise ValueError("Incorrect points or model attributes")
         next_idx = 0
         if not self.initialized:
+
+            error.confirm_initial_fit(input_points, self)
+
             input_points = numpy.copy(input_points)
             next_idx = modellib.initialize(input_points, self, initial_points)
             if not next_idx:
@@ -120,14 +122,15 @@ class Model:
             self.initialized = True
             self.threshold_fun = clustlib.mahalanobis
             self.threshold = self.mahal_threshold
-        if not error.confirm_update(input_points, self):
+
+        try:
+            error.confirm_initialized_fit(input_points, self)
+        except AssertionError:
+            traceback.print_exc()
             return
-        next_idx = modellib.cluster_points(input_points[next_idx:], self, objective.finish_points)
-        if next_idx:
-            setlib.update_compress(self)
-            return
-        sys.stderr.write("Warning: All points not clustered")
-        return
+
+        modellib.cluster_points(input_points[next_idx:], self, objective.finish_points)
+        setlib.update_compress(self)
 
     def finalize(self):
         """ Forces the model to assign all clusters in the compress and retain set to
@@ -139,9 +142,12 @@ class Model:
 
         """
 
-        if not error.confirm_attributes(self):
-            sys.stderr.write("Warning: bfr.Model attributes tampered with")
+        try:
+            error.confirm_attributes(self)
+        except AssertionError:
+            traceback.print_exc()
             return
+
         setlib.finalize_set(self.compress, self)
         setlib.finalize_set(self.retain, self)
         self.compress = []
@@ -169,7 +175,12 @@ class Model:
 
         """
 
-        error.confirm_predict(points, self)
+        try:
+            error.confirm_predict(points, self)
+        except AssertionError:
+            traceback.print_exc()
+            return None
+
         nof_predictions = len(points)
         predictions = numpy.zeros(nof_predictions)
         for idx in range(nof_predictions):
@@ -193,7 +204,11 @@ class Model:
 
         """
 
-        error.confirm_error(points, self)
+        try:
+            error.confirm_error(points, self)
+        except AssertionError:
+            traceback.print_exc()
+            return 0
         return modellib.rss_error(points, self)
 
     def centers(self):
@@ -206,9 +221,11 @@ class Model:
 
         """
 
-        if not error.confirm_centers('_', self):
-            sys.stderr.write("BFR: Incorrect model attributes")
-            return None
+        try:
+            error.confirm_centers(self)
+        except AssertionError:
+            print(AssertionError)
+
         means = numpy.zeros((self.nof_clusters, self.dimensions))
         for idx, cluster in enumerate(self.discard):
             means[idx] = clustlib.mean(cluster)
