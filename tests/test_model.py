@@ -35,32 +35,30 @@ class ModellibTests(unittest.TestCase):
                                    n_features=DIMENSIONS, centers=NOF_CLUSTERS,
                                    shuffle=True, random_state=None)
 
-    def test_create(self):
-        """ Tests that a model is created with the correct amount of clusters and
-        that the initialization phase is ensured when threshold used in the
-        initialization phase is large.
+    def test_fit(self):
+        """ Tests that initalization phase is not completed when eucl_threshold is
+        infinitely small. Tests that initialization phase is completed when eucl_threshold
+        is infinite.
+
 
         -------
 
         """
 
-        idx = self.created.create(self.vectors)
-        nof_discard = len(self.created.discard)
-        self.assertEqual(nof_discard, NOF_CLUSTERS, "Incorrect amount of clusters")
-        self.assertTrue(idx, "Initialization objective never reached")
+        local = bfr.Model(mahalanobis_factor=3, euclidean_threshold=3.5,
+                          merge_threshold=30.0, dimensions=DIMENSIONS,
+                          init_rounds=5, nof_clusters=NOF_CLUSTERS)
+        inf_small = 0.0001
+        local.eucl_threshold = inf_small
+        local.threshold = local.eucl_threshold
+        local.distance_fun = clustlib.euclidean
 
-    def test_update(self):
-        """ Tests that the number of points of a cluster is bigger after a model is
-        updated with the same input as it was created with.
-
-        -------
-
-        """
-
-        size = self.created.discard[0].size
-        self.created.update(self.vectors)
-        updated_size = self.created.discard[0].size
-        self.assertGreater(updated_size, size, "First cluster not updated")
+        local.fit(self.vectors)
+        self.assertTrue(local.threshold == inf_small, "Incorrectly switched threshold")
+        local.eucl_threshold = INFINITY
+        local.threshold = INFINITY
+        local.fit(self.vectors)
+        self.assertTrue(local.threshold != INFINITY, "Did not switch threshold")
 
     def test_finalize(self):
         """ Tests that the sum of all cluster sizes equals to the number of points clustered
@@ -69,14 +67,20 @@ class ModellibTests(unittest.TestCase):
         -------
 
         """
-        self.created.update(self.vectors)
-        self.created.finalize()
-        sizes = map(lambda cluster: cluster.size, self.created.discard)
+
+        local = bfr.Model(mahalanobis_factor=3, euclidean_threshold=3.5,
+                          merge_threshold=1.2, dimensions=DIMENSIONS,
+                          init_rounds=5, nof_clusters=NOF_CLUSTERS)
+
+        local.fit(self.vectors)
+        local.fit(self.vectors)
+        local.finalize()
+        sizes = map(lambda cluster: cluster.size, local.discard)
         finalized_sizes = reduce(lambda size, other: size + other, list(sizes))
-        retain_size = len(self.created.retain)
-        compress_size = len(self.created.compress)
-        #self.assertEqual(retain_size, 0, "retain set not finallized")
-        #self.assertEqual(compress_size, 0, "compress set not finallized")
+        retain_size = len(local.retain)
+        compress_size = len(local.compress)
+        self.assertEqual(retain_size, 0, "retain set not finallized")
+        self.assertEqual(compress_size, 0, "compress set not finallized")
         self.assertEqual(finalized_sizes, 2000)
 
     def test_predict(self):

@@ -17,9 +17,8 @@ class TestClustering(unittest.TestCase):
     model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
                       merge_threshold=10.0, dimensions=dimensions,
                       init_rounds=40, nof_clusters=nof_clusters)
-    model.create(vectors)
+    model.fit(vectors)
     model.finalize()
-    print(model.error(vectors))
 
     def test_plot(self):
         """ predicts points of the generated testdata using the created bfr.model
