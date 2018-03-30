@@ -82,7 +82,7 @@ def cluster_points(points, model, objective_fun):
         clustlib.cluster_point(point, model)
         if objective_fun(idx, points, model):
             return idx + 1
-    return False
+    return 0
 
 
 def predict_point(point, model, outlier_detection=False):

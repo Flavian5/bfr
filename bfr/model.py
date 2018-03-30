@@ -61,6 +61,9 @@ class Model:
     retain : list
         Contains uncompressed outliers which are neither near to other points nor a cluster
 
+    initialized : bool
+        True if initialization phase has been completed, false otherwise.
+
     """
 
     def __init__(self, **kwargs):
@@ -80,11 +83,12 @@ class Model:
         self.discard = []
         self.compress = []
         self.retain = []
+        self.initialized = False
         if not error.confirm_attributes(self):
             raise AttributeError("bfr.model has incorrect attributes")
 
-    def create(self, input_points, initial_points=None):
-        """ Creates a bfr model from input_points optionally using
+    def fit(self, input_points, initial_points=None):
+        """ Fits a bfr model with input_points optionally using
         the initial points specified in initial points.
 
         Parameters
@@ -100,52 +104,30 @@ class Model:
 
         Returns
         -------
-        bool
-            True if the model was successfully created. False otherwise.
 
         """
 
         if not error.confirm_create(input_points, self):
             raise ValueError("Incorrect points or model attributes")
-        points = numpy.copy(input_points)
-        next_idx = modellib.initialize(points, self, initial_points)
-        if next_idx:
+        next_idx = 0
+        if not self.initialized:
+            input_points = numpy.copy(input_points)
+            next_idx = modellib.initialize(input_points, self, initial_points)
+            if not next_idx:
+                sys.stderr.write("Warning: bfr.Model fitted with points but "
+                                 "initialization phase never finished")
+                return
+            self.initialized = True
             self.threshold_fun = clustlib.mahalanobis
             self.threshold = self.mahal_threshold
-            self.update(points, next_idx)
-            return True
-        sys.stderr.write("Warning: bfr.Model created but never finished initialization phase")
-        return False
-
-    def update(self, input_points, next_idx=0):
-        """ Updates a model given input_points. next_idx specifies which row of the input_points
-        matrix to start with.
-
-        Parameters
-        ----------
-        input_points : numpy.ndarray
-            (rows, dimensions) array with rows consisting of points. The points should
-            have the same dimensionality as the model.
-
-        next_idx : int
-            The next row index of points from which the model will be updated.
-            Leave at 0 to include all points.
-
-        Returns
-        -------
-        bool
-            True if the clustering clusters all points. False otherwise
-
-        """
-
         if not error.confirm_update(input_points, self):
-            return False
+            return
         next_idx = modellib.cluster_points(input_points[next_idx:], self, objective.finish_points)
         if next_idx:
             setlib.update_compress(self)
-            return True
+            return
         sys.stderr.write("Warning: All points not clustered")
-        return False
+        return
 
     def finalize(self):
         """ Forces the model to assign all clusters in the compress and retain set to
