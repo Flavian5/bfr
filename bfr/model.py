@@ -188,7 +188,7 @@ class Model:
             predictions[idx] = modellib.predict_point(point, self, outlier_detection)
         return predictions.astype(int)
 
-    def error(self, points):
+    def error(self, points, outlier_detection=False):
         """ Computes the error of the model measured with points.
 
         Parameters
@@ -209,7 +209,7 @@ class Model:
         except AssertionError:
             traceback.print_exc()
             return 0
-        return modellib.rss_error(points, self)
+        return modellib.rss_error(points, self, outlier_detection)
 
     def centers(self):
         """ Returns all cluster centers.
