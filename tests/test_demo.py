@@ -15,10 +15,11 @@ class TestClustering(unittest.TestCase):
                                    shuffle=True)
 
     model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
-                      merge_threshold=10.0, dimensions=dimensions,
-                      init_rounds=40, nof_clusters=nof_clusters)
+                      merge_threshold=0.5, dimensions=dimensions,
+                      init_rounds=5, nof_clusters=nof_clusters)
     model.fit(vectors)
     model.finalize()
+    print(model.error(vectors))
 
     def test_plot(self):
         """ predicts points of the generated testdata using the created bfr.model

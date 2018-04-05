@@ -12,6 +12,7 @@ NOF_CLUSTERS = 5
 model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=5.0,
                   merge_threshold=10.0, dimensions=DIMENSIONS,
                   init_rounds=10, nof_clusters=NOF_CLUSTERS)
+model.initialized = True
 INFINITY = 13371337.0
 point = numpy.ones(2)
 other_point = point * 2
