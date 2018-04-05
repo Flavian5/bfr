@@ -195,7 +195,7 @@ class Model:
             predictions[idx] = modellib.predict_point(point, self, outlier_detection)
         return predictions.astype(int)
 
-    def error(self, points, outlier_detection=False):
+    def error(self, points=None, outlier_detection=False):
         """ Computes the error of the model measured with points.
 
         Parameters
@@ -203,6 +203,11 @@ class Model:
         points : numpy.ndarray
             (rows, dimensions) array with rows consisting of points. The points should
             have the same dimensionality as the model.
+
+        outlier_detection : bool
+            If True, outliers will be ignored when computing the error.
+            If False, all points will be considered.
+
 
         Returns
         -------
@@ -216,6 +221,8 @@ class Model:
         except AssertionError:
             traceback.print_exc()
             return 0
+        if points is None:
+            return modellib.std_error(self)
         return modellib.rss_error(points, self, outlier_detection)
 
     def centers(self):

@@ -23,7 +23,10 @@ def confirm_predict(points, model):
 
 
 def confirm_error(points, model):
-    check_clusters(points, model)
+    if points is None:
+        check_attributes(model)
+    else:
+        check_clusters(points, model)
 
 
 def confirm_centers(model):

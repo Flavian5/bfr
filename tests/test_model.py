@@ -115,10 +115,12 @@ class ModellibTests(unittest.TestCase):
 
         model.discard.append(ones)
         model.discard.append(twos)
-        error = model.error(points * 0)
-        self.assertEqual(error, 4)
-        error = model.error(points * 2)
-        self.assertEqual(error, 8)
+        rss_error = model.error(points * 0)
+        std_error = model.error()
+        self.assertTrue(isinstance(std_error, float))
+        self.assertEqual(rss_error, 4)
+        rss_error = model.error(points * 2)
+        self.assertEqual(rss_error, 8)
         model.discard = []
 
 
