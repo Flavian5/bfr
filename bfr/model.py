@@ -88,6 +88,10 @@ class Model:
 
         error.confirm_attributes(self)
 
+        # Floating point errors result in sqrt of negative nrs in rare cases.
+        # The NaN nrs are treated correctly and warnings may thus be ignored.
+        numpy.seterr(invalid='ignore')
+
     def fit(self, input_points, initial_points=None):
         """ Fits a bfr model with input_points optionally using
         the initial points specified in initial points.
