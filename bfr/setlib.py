@@ -26,9 +26,11 @@ def try_retain(point, model):
         model.retain.append(new_cluster)
         return
     closest_idx = clustlib.closest(point, model.retain, clustlib.euclidean)
-    closest_cluster = model.retain[closest_idx]
+    model.retain[0], model.retain[closest_idx] = model.retain[closest_idx], model.retain[0]
+
+    closest_cluster = model.retain[0]
     if clustlib.euclidean(point, closest_cluster) < model.eucl_threshold:
-        model.retain.pop(closest_idx)
+        model.retain.pop(0)
         clustlib.update_cluster(point, closest_cluster)
         model.compress.append(closest_cluster)
     else:
