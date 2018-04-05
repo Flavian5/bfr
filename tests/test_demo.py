@@ -14,9 +14,9 @@ class TestClustering(unittest.TestCase):
                                    n_features=dimensions, centers=nof_clusters,
                                    shuffle=True)
 
-    model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=3.0,
+    model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=1.7,
                       merge_threshold=0.5, dimensions=dimensions,
-                      init_rounds=5, nof_clusters=nof_clusters)
+                      init_rounds=1, nof_clusters=nof_clusters)
     model.fit(vectors)
     model.finalize()
     print(model.error(vectors))
