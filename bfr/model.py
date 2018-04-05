@@ -120,9 +120,8 @@ class Model:
             input_points = numpy.copy(input_points)
             next_idx = modellib.initialize(input_points, self, initial_points)
             if not next_idx:
-                sys.stderr.write("Warning: bfr.Model fitted with points but "
-                                 "initialization phase never finished")
                 return
+
             self.initialized = True
             self.threshold_fun = clustlib.mahalanobis
             self.threshold = self.mahal_threshold
@@ -184,6 +183,10 @@ class Model:
         except AssertionError:
             traceback.print_exc()
             return None
+
+        if not self.initialized:
+            sys.stderr.write("Warning: bfr.Model not initialized."
+                             " Predict is using Euclidean threshold for outlier detection.\n")
 
         nof_predictions = len(points)
         predictions = numpy.zeros(nof_predictions)
