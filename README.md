@@ -6,6 +6,7 @@ There are two main principles of the algorithm:
 
 * Make decisions which are likely to be good directly. Push uncertain decisions into 
 the future
+![](https://i.imgur.com/ttatfNv.gif)
 ## Synopsis
 BFR summarizes clusters using two main attributes:
 * Sum in each dimension
