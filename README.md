@@ -17,19 +17,19 @@ The sum and sum of squares allows efficient computation of the mean (centroid) a
 Clusters are represented by the centroid and spread (standard deviation)
 
 The BFR model contains three sets:
-* The discard set
-* The compress set
-* The retain set
+* The discard set (blue, red)
+* The compress set (gray)
+* The retain set (black)
 
-The discard set contains the main clusters.
+The <b>discard set</b> contains the main clusters.
 
-The compress set contains points that are far from clusters in discard but close to eachother. These also get summarized as clusters.
+The <b>compress set</b> contains points that are far from clusters in discard but close to eachother. These get summarized as clusters.
 
-The retain set contains points that are far from all other clusters or points in any set.
+The <b>retain set</b> contains points that are far from clusters in both discard and compress and also far from other points in retain.
 
-The initial step of the algorithm is to pick k points and let these be the main clusters.
+The initial step of the algorithm is to pick <b>k</b> points and let these be the main clusters in discard.
 
-The outcome of the clustering is highly dependent on the initial points. Therefore the distance is maximized between the initial points with the following algorithm:
+The outcome of the clustering is highly dependent on the <b>initial points</b>. Therefore the distance is maximized between the initial points with the following algorithm:
     
     let initial points = randomly picked point from input points
     while len(initial points) < k 
@@ -52,7 +52,7 @@ After picking the initial point it is time to go throught the rest of the points
         if point is within threshold to closest point in retain:
             combine those two points to a cluster and move the resulting cluster to compress
         
-For each point added to a cluster, the sum and sum of squares of the cluster are updated. The point is then discarded.
+For each point added to a cluster, the <b>sum</b> and <b>sum of squares</b> of the cluster are updated. The point is then discarded.
 
 When all points have been handled there are clusters in compress and points in retain. The final step of the algorithm is to assign/merge these to/with their closest cluster in discard. This is done in the <b>finallize()</b> call.
 
@@ -68,7 +68,7 @@ There are two distance functions: <b>Mahalanobis distance</b> and <b>Euclidean d
 
 Both Euclidean and mahalanobis distance have their own <b>corresponding threshold.</b>
 
-<b>Two clusters in compress</b> are considered close and will be merged if 
+<b>Merge threshold</b> is used to determine if two clusters in compress are considered close. Two clusters in compress will be merged if:
 
     std_dev(merged) < (std_dev(cluster) + std_dev(other)) * merge_threshold 
 
@@ -98,7 +98,13 @@ Both Euclidean and mahalanobis distance have their own <b>corresponding threshol
     # Print the residual sum of square error
     print(model.error(vectors))
     
-    # Predict the which cluster some points belong to.
+    # Print cheap standard deviation based error without going through every vector
+    print(model.error())
+    
+    # Predict the which cluster some points belong to
+    predictions = model.predict(vectors[:2])
+
+    # Predict the which cluster some points belong to
     # Outlier_detection=True defines that points far from their closest cluster will be identified
     predictions = model.predict(vectors[:2], outlier_detection=True)
 
@@ -112,25 +118,30 @@ mahalanobis_factor : float
         
     Nearness of point and cluster is determined by
     mahalanobis distance < mahalanobis_factor * sqrt(dimensions)
+    Leaving this value at 3.0 usually provides good results.
 
 euclidean_threshold : float
     
-    Nearness of a point and a cluster is determined by
+    Nearness when using euclidean distance is determined by
     Euclidean distance(point,cluster) < eucl_threshold
+    This value has to be adapted depending on the range of euclidean distances between points.
  
 merge_threshold : float
     
     Two clusters in the compress set will be merged if their merged standard deviation
     is less than or equal to (std_dev(cluster) + std_dev(other_cluster)) * merge_threshold.
+    Keeping this value between 0.5-1.0 is usually a good starting point
  
 dimensions : int
     
-    The dimensionality of the model
+    The dimensionality of the model.
+    This number should be equal to the number of features of points.
 
 init_rounds : int
     
-    Higher integer numbers give better spread of the initial points
-
+    Higher integer numbers give better spread of the initial points.
+    Higher integer numbers give more stable results on the same dataset.
+    Higher integer numbers increase the risk of starting with outlying points
 
 nof_clusters : int
      
