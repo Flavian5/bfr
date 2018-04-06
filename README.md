@@ -96,7 +96,7 @@ Both Euclidean and mahalanobis distance have their own <b>corresponding threshol
     # Fit (Update) the model using 500 other vectors
     model.fit(vectors[500:])
     
-    # Finalize assigns clusters in the discard and retain set to the closest cluster in discard 
+    # Finalize assigns clusters in the compress and retain set to the closest cluster in discard 
     model.finalize()
     
     # Print the residual sum of square error
