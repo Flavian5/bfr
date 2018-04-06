@@ -1,5 +1,9 @@
 # Clustering with BFR
-BFR is a one pass algorithm for clustering large databases.
+BFR is an algorithm for clustering large databases
+
+The algorithm requires only one pass over a dataset
+
+The algorithm utilizes data compression to improve memory performance
 
 There are two main principles of the algorithm:
 * Summarize points in clusters. This results in a memory complexity which is O(clusters)
