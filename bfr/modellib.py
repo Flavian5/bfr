@@ -202,7 +202,10 @@ def std_error(model):
     """
 
     error = 0
+    nof_clusters = len(model.discard)
     for cluster in model.discard:
         std_dev = clustlib.std_dev(cluster)
-        error += numpy.sum(std_dev)
-    return error
+        dim_avg = std_dev / model.dimensions
+        error += numpy.sum(dim_avg)
+    cluster_avg = error / nof_clusters
+    return cluster_avg
