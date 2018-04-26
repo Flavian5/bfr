@@ -187,7 +187,7 @@ def mahalanobis_error(points, model, outlier_detection=False):
 
 
 def std_error(model):
-    """ Computes the sum of the standard deviation of all clusters in all dimensions.
+    """ Computes the cluster average of average standard deviation of all clusters in all dimensions.
     Represents a measurement of spread.
 
     Parameters
