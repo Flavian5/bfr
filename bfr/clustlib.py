@@ -213,8 +213,7 @@ def mahalanobis(point, cluster):
     else:
         idx = numpy.where(std_devs != 0)
         normalized = diff[idx] / std_devs[idx]
-    squared = normalized ** 2
-    total = numpy.sum(squared)
+    total = numpy.dot(normalized, normalized)
     return numpy.sqrt(total)
 
 
