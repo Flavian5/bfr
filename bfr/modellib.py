@@ -111,7 +111,7 @@ def predict_point(point, model, outlier_detection=False):
     closest_idx = clustlib.closest(point, model.discard, model.distance_fun)
     if not outlier_detection:
         return closest_idx
-    if model.distance_fun(point, model.discard[closest_idx]) < model.threshold:
+    if model.threshold_fun(point, model.discard[closest_idx]) < model.threshold:
         return closest_idx
     return -1
 
