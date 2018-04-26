@@ -124,6 +124,7 @@ class Model:
 
             self.initialized = True
             self.threshold_fun = clustlib.mahalanobis
+            self.distance_fun = clustlib.mahalanobis
             self.threshold = self.mahal_threshold
 
         try:
