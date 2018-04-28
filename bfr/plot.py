@@ -78,6 +78,7 @@ class BfrPlot:
         _, labels = self.axis.get_legend_handles_labels()
         self.axis.legend(legend_entries, labels, loc=1)
         matplotlib.pyplot.show()
+        matplotlib.pyplot.close("all")
 
 
 def create_axis(projection=None):
@@ -96,14 +97,16 @@ def create_axis(projection=None):
     """
 
     fig = matplotlib.pyplot.figure()
-    fig.suptitle("Testing testing")
+    fig.suptitle("Clusters - BFR")
     fig.subplots_adjust(top=0.85)
     matplotlib.pyplot.set_cmap("tab20")
     if projection:
         axis = fig.add_subplot(111, projection=projection)
+        axis.set_zlabel("Z")
     else:
         axis = fig.add_subplot(111)
-    axis.set_title("Axis title")
+    axis.set_xlabel("X")
+    axis.set_ylabel("Y")
     return axis
 
 
@@ -197,7 +200,7 @@ def get_cluster_shape(model, cluster):
 
 def confidence_interval(cluster, threshold):
     """ Computes cluster shape based on the cluster and threshold.
-        If mahalanobis threshold is used and set to N * sqrt(dimensions)
+        If mahalanobis threshold is set to N * sqrt(dimensions)
         the shape will correspond to a confidence interval equal to
         N standard deviations of a normal distribution.
 
