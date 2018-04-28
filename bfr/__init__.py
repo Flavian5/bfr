@@ -5,3 +5,4 @@ from . import modellib
 from . import ptlib
 from . import setlib
 from . import objective
+from . import plot
