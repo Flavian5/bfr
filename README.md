@@ -117,6 +117,13 @@ Both Euclidean and mahalanobis distance have their own <b>corresponding threshol
     
     # Print the model
     print(model)
+    
+    # Plot the model
+    model.plot()
+    
+    # Plot the model and add points to the plot
+    model.plot(vectors, outlier_detection=False)
+
 ## Model Attributes
 mahalanobis_factor : float
         
@@ -134,7 +141,7 @@ merge_threshold : float
     
     Two clusters in the compress set will be merged if their merged standard deviation
     is less than or equal to (std_dev(cluster) + std_dev(other_cluster)) * merge_threshold.
-    Keeping this value between 0.5-1.0 is usually a good starting point
+    Keeping this value around 0.5 is usually a good starting point
  
 dimensions : int
     
