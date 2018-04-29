@@ -33,6 +33,14 @@ def confirm_centers(model):
     check_attributes(model)
 
 
+def confirm_plot(points, model):
+    assert model.dimensions == 2 or model.dimensions == 3, "Can only plot 2d or 3d"
+    if points is not None:
+        check_clusters(points, model)
+    else:
+        check_attributes(model)
+
+
 def check_attributes(model):
     assert isinstance(model.mahal_threshold, float), "mahalanobis_factor not float"
     assert isinstance(model.eucl_threshold, float), "euclidean_threshold not float"

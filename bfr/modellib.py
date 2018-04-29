@@ -13,7 +13,7 @@ def initialize(points, model, initial_points=None):
     ----------
     points : numpy.ndarray
         (rows, dimensions) array with rows consisting of points. The points should
-        have the same dimensionality as the model.numpy.matrix
+        have the same dimensionality as the model.
 
     model : bfr.Model
 
@@ -111,7 +111,7 @@ def predict_point(point, model, outlier_detection=False):
     closest_idx = clustlib.closest(point, model.discard, model.distance_fun)
     if not outlier_detection:
         return closest_idx
-    if model.distance_fun(point, model.discard[closest_idx]) < model.threshold:
+    if model.threshold_fun(point, model.discard[closest_idx]) < model.threshold:
         return closest_idx
     return -1
 
@@ -187,7 +187,7 @@ def mahalanobis_error(points, model, outlier_detection=False):
 
 
 def std_error(model):
-    """ Computes the sum of the standard deviation of all clusters in all dimensions.
+    """ Computes the cluster average of average standard deviation of all clusters in all dimensions.
     Represents a measurement of spread.
 
     Parameters
@@ -202,7 +202,10 @@ def std_error(model):
     """
 
     error = 0
+    nof_clusters = len(model.discard)
     for cluster in model.discard:
         std_dev = clustlib.std_dev(cluster)
-        error += numpy.sum(std_dev)
-    return error
+        dim_avg = std_dev / model.dimensions
+        error += numpy.sum(dim_avg)
+    cluster_avg = error / nof_clusters
+    return cluster_avg

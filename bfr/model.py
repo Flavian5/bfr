@@ -9,7 +9,7 @@ from . import objective
 from . import setlib
 from . import clustlib
 from . import error
-
+from . import plot
 
 class Model:
     """ A bfr model
@@ -124,6 +124,7 @@ class Model:
 
             self.initialized = True
             self.threshold_fun = clustlib.mahalanobis
+            self.distance_fun = clustlib.mahalanobis
             self.threshold = self.mahal_threshold
 
         try:
@@ -244,6 +245,38 @@ class Model:
         for idx, cluster in enumerate(self.discard):
             means[idx] = clustlib.mean(cluster)
         return means
+
+    def plot(self, points=None, outlier_detection=True):
+        """ Plot the model. The dimensions of clusters are represented by default threshold.
+        If mahalanobis threshold is set to N * sqrt(dimensions)
+        the shape will correspond to a confidence interval equal to
+        N standard deviations of a normal distribution.
+
+        Parameters
+        ----------
+        points : numpy.ndarray
+            Optionally add points to the plot.
+            Points are a (rows, dimensions) array with rows consisting of points.
+            The points should have the same dimensionality as the model.
+
+        outlier_detection : bool
+            If points are provided and outlier detection = True,
+            outliers will be identified and plotted as black dots.
+            If False, all points will be assigned to their closest cluster.
+
+        Returns
+        -------
+
+        """
+
+        try:
+            error.confirm_plot(points, self)
+        except AssertionError:
+            traceback.print_exc()
+            return 0
+
+        bfr_plot = plot.BfrPlot(self, points, outlier_detection)
+        bfr_plot.show()
 
     def __str__(self):
         res = ""

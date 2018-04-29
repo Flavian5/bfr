@@ -8,27 +8,28 @@ from .context import bfr
 class TestClustering(unittest.TestCase):
     """Testing the outcome of clustering"""
     #Generating test data
-    dimensions = 2
+    dimensions = 3
     nof_clusters = 5
-    vectors, clusters = make_blobs(n_samples=1000, cluster_std=1,
+    vectors, clusters = make_blobs(n_samples=10000, cluster_std=0.1,
                                    n_features=dimensions, centers=nof_clusters,
                                    shuffle=True)
 
-    model = bfr.Model(mahalanobis_factor=3.0, euclidean_threshold=1.7,
-                      merge_threshold=0.5, dimensions=dimensions,
-                      init_rounds=100, nof_clusters=nof_clusters)
+    model = bfr.Model(mahalanobis_factor=2.0, euclidean_threshold=0.3,
+                      merge_threshold=0.01, dimensions=dimensions,
+                      init_rounds=100, nof_clusters=5)
     model.fit(vectors)
     model.finalize()
+    print(model)
     print(model.error(vectors))
+    print(model.error())
 
     def test_plot(self):
         """ predicts points of the generated testdata using the created bfr.model
         -------
         """
+
         predictions = self.model.predict(self.vectors, outlier_detection=True)
-        x_cord, y_cord = self.vectors.T
-        matplotlib.pyplot.scatter(x_cord, y_cord, c=predictions)
-        matplotlib.pyplot.show()
+        self.model.plot(points=self.vectors, outlier_detection=False)
 
 
 if __name__ == '__main__':

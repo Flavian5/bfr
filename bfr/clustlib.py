@@ -67,7 +67,7 @@ def closest(point, clusters, nearness_fun):
         A list containing bfr.clusters
 
     nearness_fun : function
-        A distance function which accepts
+        A distance function which accepts a point and a cluster and returns a float.
 
     Returns
     -------
@@ -213,8 +213,7 @@ def mahalanobis(point, cluster):
     else:
         idx = numpy.where(std_devs != 0)
         normalized = diff[idx] / std_devs[idx]
-    squared = normalized ** 2
-    total = numpy.sum(squared)
+    total = numpy.dot(normalized, normalized)
     return numpy.sqrt(total)
 
 
