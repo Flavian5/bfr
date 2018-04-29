@@ -13,7 +13,7 @@ def initialize(points, model, initial_points=None):
     ----------
     points : numpy.ndarray
         (rows, dimensions) array with rows consisting of points. The points should
-        have the same dimensionality as the model.numpy.matrix
+        have the same dimensionality as the model.
 
     model : bfr.Model
 

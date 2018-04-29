@@ -67,7 +67,7 @@ def closest(point, clusters, nearness_fun):
         A list containing bfr.clusters
 
     nearness_fun : function
-        A distance function which accepts
+        A distance function which accepts a point and a cluster and returns a float.
 
     Returns
     -------

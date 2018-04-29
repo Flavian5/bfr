@@ -1,4 +1,4 @@
-"This is the package bfr"
+"""This is the package bfr"""
 from .model import Model
 from . import clustlib
 from . import modellib
