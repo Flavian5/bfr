@@ -35,6 +35,7 @@ def confirm_centers(model):
 
 def confirm_plot(points, model):
     assert model.dimensions == 2 or model.dimensions == 3, "Can only plot 2d or 3d"
+    assert model.initialized, "Can only plot initialized models"
     if points is not None:
         check_clusters(points, model)
     else:

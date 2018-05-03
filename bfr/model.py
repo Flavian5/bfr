@@ -121,11 +121,7 @@ class Model:
             next_idx = modellib.initialize(input_points, self, initial_points)
             if not next_idx:
                 return
-
-            self.initialized = True
-            self.threshold_fun = clustlib.mahalanobis
-            self.distance_fun = clustlib.mahalanobis
-            self.threshold = self.mahal_threshold
+            modellib.enable_mahalanobis(self)
 
         try:
             error.confirm_initialized_fit(input_points, self)
@@ -156,6 +152,8 @@ class Model:
         setlib.finalize_set(self.retain, self)
         self.compress = []
         self.retain = []
+        if objective.zerofree_variances(model=self):
+            modellib.enable_mahalanobis(self)
 
     def predict(self, points, outlier_detection=False):
         """ Predicts which cluster a point belongs to.

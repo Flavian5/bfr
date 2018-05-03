@@ -8,7 +8,7 @@ from .context import bfr
 class TestClustering(unittest.TestCase):
     """Testing the outcome of clustering"""
     #Generating test data
-    dimensions = 3
+    dimensions = 2
     nof_clusters = 5
     vectors, clusters = make_blobs(n_samples=10000, cluster_std=0.1,
                                    n_features=dimensions, centers=nof_clusters,
@@ -28,8 +28,7 @@ class TestClustering(unittest.TestCase):
         -------
         """
 
-        predictions = self.model.predict(self.vectors, outlier_detection=True)
-        self.model.plot(points=self.vectors, outlier_detection=False)
+        self.model.plot(points=self.vectors, outlier_detection=True)
 
 
 if __name__ == '__main__':
