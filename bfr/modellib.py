@@ -150,6 +150,25 @@ def rss_error(points, model, outlier_detection=False):
     return error
 
 
+def enable_mahalanobis(model):
+    """ Changes the default threshold and distance function to mahalanobis.
+    Changes the default threshold to mahalanobis.
+
+    Parameters
+    ----------
+    model : bfr.Model
+
+    Returns
+    -------
+
+    """
+
+    model.initialized = True
+    model.threshold_fun = clustlib.mahalanobis
+    model.distance_fun = clustlib.mahalanobis
+    model.threshold = model.mahal_threshold
+
+
 def mahalanobis_error(points, model, outlier_detection=False):
     """ Computes the sum of mahalanobis distances between all points and their
     closest clusters. If outlier_detection=True, outliers are excluded.

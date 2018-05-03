@@ -61,10 +61,11 @@ class BfrPlot:
             if self.points is not None:
                 corr_points = find_points(self.points, self.predictions, idx)
                 cords = corr_points.T
+                colors = [col for each in corr_points]
                 if self.dimensions == 3:
-                    self.axis.scatter(cords[0], cords[1], cords[2], c=col)
+                    self.axis.scatter(cords[0], cords[1], cords[2], c=colors)
                 else:
-                    self.axis.scatter(cords[0], cords[1], c=col)
+                    self.axis.scatter(cords[0], cords[1], c=colors)
             if idx == -1:
                 continue
             add_legend_entry(legend_entries, col)

@@ -9,7 +9,7 @@ with open('LICENSE') as f:
 
 setup(
     name='bfr',
-    version='0.0.1',
+    version='0.0.2',
     description='Clustering using the BFR algorithm',
     long_description=readme,
     author='Jesper Berglund',

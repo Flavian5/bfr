@@ -1,7 +1,7 @@
 """This module contains objective functions."""
 
 
-def finish_points(idx, points, _):
+def finish_points(idx=None, points=None, model=None):
     """ Used to determine when all points have been clustered.
 
     Parameters
@@ -22,7 +22,7 @@ def finish_points(idx, points, _):
     return idx == len(points) - 1
 
 
-def zerofree_variances(_, __, model):
+def zerofree_variances(idx=None, points=None, model=None):
     """ Used to determine when all clusters of the discard set have non zero variance
     in all dimensions
 
