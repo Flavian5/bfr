@@ -167,7 +167,6 @@ def enable_mahalanobis(model):
 
     model.initialized = True
     model.threshold_fun = clustlib.mahalanobis
-    model.distance_fun = clustlib.mahalanobis
     model.threshold = model.mahal_threshold
 
 

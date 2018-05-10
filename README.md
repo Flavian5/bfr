@@ -64,7 +64,7 @@ There are two distance functions: <b>Mahalanobis distance</b> and <b>Euclidean d
 
 <b>Euclidean distance</b> is the "normal" distance that most people think of.
 
-<b>Mahalanobis distance</b> is a distance measure that considers the spread (standard deviation) of a cluster. The mahalanobis distance of a point and a cluster is lower if a cluster has a high spread. The mahalanobis distance of a point and a cluster is higher if a cluster has a low spread. The <b>mahalanobis distance is the main distance function</b> in this implementation
+<b>Mahalanobis distance</b> is a distance measure that considers the spread (standard deviation) of a cluster. The mahalanobis distance of a point and a cluster is lower if a cluster has a high spread. The mahalanobis distance of a point and a cluster is higher if a cluster has a low spread. The <b>mahalanobis distance is the main threshold function</b> in this implementation
 
 <b>Euclidean distance</b> is used in the <b>initialization phase.</b> When clusters are represented by a point they have no spread and therefore mahalanobis distance may not be computed. The initialization phase is over when all discard clusters have a standard deviation in each dimension. <b>After the initalization phase mahalananobis distance is used</b> to determine nearness between a point and a cluster.
 
