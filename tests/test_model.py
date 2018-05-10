@@ -60,6 +60,7 @@ class ModellibTests(unittest.TestCase):
         local.threshold = INFINITY
         local.fit(self.vectors)
         self.assertTrue(local.threshold != INFINITY, "Did not switch threshold")
+        self.assertEqual(len(local.discard), NOF_CLUSTERS, "incorrect nr of clusters")
 
     def test_finalize(self):
         """ Tests that the sum of all cluster sizes equals to the number of points clustered
