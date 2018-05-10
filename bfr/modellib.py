@@ -30,9 +30,11 @@ def initialize(points, model, initial_points=None):
 
     """
 
-    if initial_points is None:
-        initial_points = ptlib.best_spread(points, model, initial_points)
-    initiate_clusters(initial_points, model)
+    if not model.discard:
+        if initial_points is None:
+            initial_points = ptlib.best_spread(points, model, initial_points)
+        initiate_clusters(initial_points, model)
+
     next_idx = cluster_points(points, model, objective.zerofree_variances)
     return next_idx
 
@@ -165,7 +167,6 @@ def enable_mahalanobis(model):
 
     model.initialized = True
     model.threshold_fun = clustlib.mahalanobis
-    model.distance_fun = clustlib.mahalanobis
     model.threshold = model.mahal_threshold
 
 
