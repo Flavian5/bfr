@@ -7,6 +7,9 @@ with open('README.md') as f:
 with open('LICENSE') as f:
     license = f.read()
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='bfr',
     version='0.0.3',
@@ -16,5 +19,6 @@ setup(
     author_email='jesbergl@kth.se',
     url='https://github.com/jeppeb91/bfr',
     license=license,
-    packages=find_packages(exclude='tests')
+    packages=find_packages(exclude='tests'),
+    install_requires=requirements
 )
